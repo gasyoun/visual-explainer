@@ -1,0 +1,89 @@
+{
+ "note": "Illustrative hand-written parallel texts; not part of the FLORES audit.",
+ "texts": {
+  "prompt": {
+   "EN": "Please analyze this dataset and explain the three most important trends in simple language.",
+   "RU": "Пожалуйста, проанализируй этот датасет и объясни три самые важные тенденции простым языком.",
+   "HI": "कृपया इस डेटासेट का विश्लेषण करें और तीन सबसे महत्वपूर्ण रुझानों को सरल भाषा में समझाएं।",
+   "SA": "कृपया एतत् दत्तांशसमूहं विश्लेष्य त्रीणि प्रमुखाणि प्रवृत्तीनि सरलभाषया व्याख्यातु।"
+  },
+  "verse": {
+   "SA": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+   "EN": "You have a right to action alone, never to its fruits. Do not let the fruits of action be your motive, nor let your attachment be to inaction.",
+   "RU": "Ты имеешь право только на действие, но не на его плоды. Пусть плоды действия не будут твоим мотивом, и пусть у тебя не будет привязанности к бездействию.",
+   "HI": "तुम्हारा अधिकार केवल कर्म करने में है, उसके फल में नहीं। फल को अपना उद्देश्य मत बनाओ, और अकर्म में भी आसक्ति मत रखो।"
+  }
+ },
+ "results": {
+  "gpt-4o (o200k)": {
+   "prompt": {
+    "EN": 15,
+    "RU": 27,
+    "HI": 27,
+    "SA": 38
+   },
+   "verse": {
+    "SA": 38,
+    "EN": 33,
+    "RU": 42,
+    "HI": 35
+   }
+  },
+  "gpt-4 (cl100k)": {
+   "prompt": {
+    "EN": 15,
+    "RU": 46,
+    "HI": 88,
+    "SA": 88
+   },
+   "verse": {
+    "SA": 83,
+    "EN": 33,
+    "RU": 68,
+    "HI": 112
+   }
+  },
+  "Qwen2.5": {
+   "prompt": {
+    "EN": 15,
+    "RU": 34,
+    "HI": 82,
+    "SA": 80
+   },
+   "verse": {
+    "SA": 77,
+    "EN": 33,
+    "RU": 52,
+    "HI": 107
+   }
+  },
+  "DeepSeek-V3": {
+   "prompt": {
+    "EN": 15,
+    "RU": 30,
+    "HI": 50,
+    "SA": 49
+   },
+   "verse": {
+    "SA": 48,
+    "EN": 33,
+    "RU": 50,
+    "HI": 63
+   }
+  },
+  "Mistral-7B": {
+   "prompt": {
+    "EN": 15,
+    "RU": 39,
+    "HI": 97,
+    "SA": 88
+   },
+   "verse": {
+    "SA": 86,
+    "EN": 34,
+    "RU": 59,
+    "HI": 121
+   }
+  }
+ }
+}

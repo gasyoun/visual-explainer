@@ -1,0 +1,302 @@
+{
+ "meta": {
+  "corpus": "FLORES-200 devtest",
+  "corpus_url": "https://github.com/facebookresearch/flores",
+  "corpus_license": "CC-BY-SA 4.0",
+  "n_sentences": 1012,
+  "languages": {
+   "EN": "eng_Latn",
+   "RU": "rus_Cyrl",
+   "HI": "hin_Deva",
+   "SA": "san_Deva"
+  },
+  "date": "2026-10-24",
+  "python": "3.13.15",
+  "transformers": "5.20.2",
+  "tokenizers_lib": "0.23.3",
+  "tiktoken": "0.14.0",
+  "tokenizers": {
+   "gpt-4o (o200k)": {
+    "kind": "tiktoken",
+    "encoding": "o200k_base",
+    "version": "0.14.0"
+   },
+   "gpt-4 (cl100k)": {
+    "kind": "tiktoken",
+    "encoding": "cl100k_base",
+    "version": "0.14.0"
+   },
+   "Qwen2.5": {
+    "kind": "hf",
+    "repo": "Qwen/Qwen2.5-7B",
+    "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+    "vocab_size": 151643
+   },
+   "DeepSeek-V3": {
+    "kind": "hf",
+    "repo": "deepseek-ai/DeepSeek-V3",
+    "revision": "e815299b0bcbac849fa540c768ef21845365c9eb",
+    "vocab_size": 128000
+   },
+   "Mistral-7B": {
+    "kind": "hf",
+    "repo": "mistralai/Mistral-7B-v0.3",
+    "revision": "caa1feb0e54d415e2df31207e5f4e273e33509b1",
+    "vocab_size": 32768
+   }
+  },
+  "caveat": "A tokenizer is not a model; this measures token cost, not quality. FLORES sentences are translations, so lengths differ; see ratio_median and tokens_per_char for length-normalised views."
+ },
+ "results": {
+  "gpt-4o (o200k)": {
+   "EN": {
+    "tokens_total": 26873,
+    "tokens_mean": 26.55,
+    "chars_total": 131966,
+    "tokens_per_char": 0.2036,
+    "tokens_per_100_chars": 20.36,
+    "tokens_per_word": 1.23,
+    "ratio_total": 1.0,
+    "ratio_median": 1.0,
+    "ratio_p10": 1.0,
+    "ratio_p90": 1.0
+   },
+   "RU": {
+    "tokens_total": 38188,
+    "tokens_mean": 37.74,
+    "chars_total": 142096,
+    "tokens_per_char": 0.2687,
+    "tokens_per_100_chars": 26.87,
+    "tokens_per_word": 1.94,
+    "ratio_total": 1.421,
+    "ratio_median": 1.4,
+    "ratio_p10": 1.139,
+    "ratio_p90": 1.75
+   },
+   "HI": {
+    "tokens_total": 42276,
+    "tokens_mean": 41.77,
+    "chars_total": 131058,
+    "tokens_per_char": 0.3226,
+    "tokens_per_100_chars": 32.26,
+    "tokens_per_word": 1.65,
+    "ratio_total": 1.573,
+    "ratio_median": 1.571,
+    "ratio_p10": 1.263,
+    "ratio_p90": 1.923
+   },
+   "SA": {
+    "tokens_total": 56029,
+    "tokens_mean": 55.36,
+    "chars_total": 128257,
+    "tokens_per_char": 0.4368,
+    "tokens_per_100_chars": 43.68,
+    "tokens_per_word": 3.3,
+    "ratio_total": 2.085,
+    "ratio_median": 2.1,
+    "ratio_p10": 1.613,
+    "ratio_p90": 2.609
+   }
+  },
+  "gpt-4 (cl100k)": {
+   "EN": {
+    "tokens_total": 27182,
+    "tokens_mean": 26.86,
+    "chars_total": 131966,
+    "tokens_per_char": 0.206,
+    "tokens_per_100_chars": 20.6,
+    "tokens_per_word": 1.24,
+    "ratio_total": 1.0,
+    "ratio_median": 1.0,
+    "ratio_p10": 1.0,
+    "ratio_p90": 1.0
+   },
+   "RU": {
+    "tokens_total": 66928,
+    "tokens_mean": 66.13,
+    "chars_total": 142096,
+    "tokens_per_char": 0.471,
+    "tokens_per_100_chars": 47.1,
+    "tokens_per_word": 3.41,
+    "ratio_total": 2.462,
+    "ratio_median": 2.442,
+    "ratio_p10": 1.936,
+    "ratio_p90": 3.1
+   },
+   "HI": {
+    "tokens_total": 129348,
+    "tokens_mean": 127.81,
+    "chars_total": 131058,
+    "tokens_per_char": 0.987,
+    "tokens_per_100_chars": 98.7,
+    "tokens_per_word": 5.04,
+    "ratio_total": 4.759,
+    "ratio_median": 4.76,
+    "ratio_p10": 3.745,
+    "ratio_p90": 5.944
+   },
+   "SA": {
+    "tokens_total": 134233,
+    "tokens_mean": 132.64,
+    "chars_total": 128257,
+    "tokens_per_char": 1.0466,
+    "tokens_per_100_chars": 104.66,
+    "tokens_per_word": 7.91,
+    "ratio_total": 4.938,
+    "ratio_median": 4.968,
+    "ratio_p10": 3.857,
+    "ratio_p90": 6.2
+   }
+  },
+  "Qwen2.5": {
+   "EN": {
+    "tokens_total": 27621,
+    "tokens_mean": 27.29,
+    "chars_total": 131966,
+    "tokens_per_char": 0.2093,
+    "tokens_per_100_chars": 20.93,
+    "tokens_per_word": 1.26,
+    "ratio_total": 1.0,
+    "ratio_median": 1.0,
+    "ratio_p10": 1.0,
+    "ratio_p90": 1.0
+   },
+   "RU": {
+    "tokens_total": 48471,
+    "tokens_mean": 47.9,
+    "chars_total": 142096,
+    "tokens_per_char": 0.3411,
+    "tokens_per_100_chars": 34.11,
+    "tokens_per_word": 2.47,
+    "ratio_total": 1.755,
+    "ratio_median": 1.729,
+    "ratio_p10": 1.383,
+    "ratio_p90": 2.216
+   },
+   "HI": {
+    "tokens_total": 121957,
+    "tokens_mean": 120.51,
+    "chars_total": 131058,
+    "tokens_per_char": 0.9306,
+    "tokens_per_100_chars": 93.06,
+    "tokens_per_word": 4.76,
+    "ratio_total": 4.415,
+    "ratio_median": 4.444,
+    "ratio_p10": 3.407,
+    "ratio_p90": 5.591
+   },
+   "SA": {
+    "tokens_total": 124486,
+    "tokens_mean": 123.01,
+    "chars_total": 128257,
+    "tokens_per_char": 0.9706,
+    "tokens_per_100_chars": 97.06,
+    "tokens_per_word": 7.33,
+    "ratio_total": 4.507,
+    "ratio_median": 4.579,
+    "ratio_p10": 3.474,
+    "ratio_p90": 5.737
+   }
+  },
+  "DeepSeek-V3": {
+   "EN": {
+    "tokens_total": 27041,
+    "tokens_mean": 26.72,
+    "chars_total": 131966,
+    "tokens_per_char": 0.2049,
+    "tokens_per_100_chars": 20.49,
+    "tokens_per_word": 1.23,
+    "ratio_total": 1.0,
+    "ratio_median": 1.0,
+    "ratio_p10": 1.0,
+    "ratio_p90": 1.0
+   },
+   "RU": {
+    "tokens_total": 42789,
+    "tokens_mean": 42.28,
+    "chars_total": 142096,
+    "tokens_per_char": 0.3011,
+    "tokens_per_100_chars": 30.11,
+    "tokens_per_word": 2.18,
+    "ratio_total": 1.582,
+    "ratio_median": 1.56,
+    "ratio_p10": 1.269,
+    "ratio_p90": 1.967
+   },
+   "HI": {
+    "tokens_total": 75573,
+    "tokens_mean": 74.68,
+    "chars_total": 131058,
+    "tokens_per_char": 0.5766,
+    "tokens_per_100_chars": 57.66,
+    "tokens_per_word": 2.95,
+    "ratio_total": 2.795,
+    "ratio_median": 2.8,
+    "ratio_p10": 2.217,
+    "ratio_p90": 3.48
+   },
+   "SA": {
+    "tokens_total": 77218,
+    "tokens_mean": 76.3,
+    "chars_total": 128257,
+    "tokens_per_char": 0.6021,
+    "tokens_per_100_chars": 60.21,
+    "tokens_per_word": 4.55,
+    "ratio_total": 2.856,
+    "ratio_median": 2.875,
+    "ratio_p10": 2.244,
+    "ratio_p90": 3.556
+   }
+  },
+  "Mistral-7B": {
+   "EN": {
+    "tokens_total": 29997,
+    "tokens_mean": 29.64,
+    "chars_total": 131966,
+    "tokens_per_char": 0.2273,
+    "tokens_per_100_chars": 22.73,
+    "tokens_per_word": 1.37,
+    "ratio_total": 1.0,
+    "ratio_median": 1.0,
+    "ratio_p10": 1.0,
+    "ratio_p90": 1.0
+   },
+   "RU": {
+    "tokens_total": 55637,
+    "tokens_mean": 54.98,
+    "chars_total": 142096,
+    "tokens_per_char": 0.3915,
+    "tokens_per_100_chars": 39.15,
+    "tokens_per_word": 2.83,
+    "ratio_total": 1.855,
+    "ratio_median": 1.852,
+    "ratio_p10": 1.455,
+    "ratio_p90": 2.32
+   },
+   "HI": {
+    "tokens_total": 136600,
+    "tokens_mean": 134.98,
+    "chars_total": 131058,
+    "tokens_per_char": 1.0423,
+    "tokens_per_100_chars": 104.23,
+    "tokens_per_word": 5.33,
+    "ratio_total": 4.554,
+    "ratio_median": 4.6,
+    "ratio_p10": 3.469,
+    "ratio_p90": 5.878
+   },
+   "SA": {
+    "tokens_total": 137964,
+    "tokens_mean": 136.33,
+    "chars_total": 128257,
+    "tokens_per_char": 1.0757,
+    "tokens_per_100_chars": 107.57,
+    "tokens_per_word": 8.13,
+    "ratio_total": 4.599,
+    "ratio_median": 4.633,
+    "ratio_p10": 3.556,
+    "ratio_p90": 5.864
+   }
+  }
+ }
+}
