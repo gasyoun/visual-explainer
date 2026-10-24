@@ -15,7 +15,7 @@ _Готово: 24-10-2026 · страница, скилл, данные._
 
 Внутри — калькулятор: подставляешь объём и цену, видишь счёт. И разбор, почему деванагари рассыпается на байты.
 
-Звёздочная задача: skill visual-explainer — `spec.json → build.py → check.py → render.py`. Он собрал эту страницу и ещё две мини-объяснялки; данные, скрипты и скриншоты — в репозитории.
+Звёздочная задача: skill visual-explainer — spec.json → build.py → check.py → render.py. Он собрал эту страницу и ещё две мини-объяснялки; данные, скрипты и скриншоты — в репозитории.
 
 Страница: https://gasyoun.github.io/visual-explainer/examples/token-tax/
 Скилл: https://github.com/gasyoun/visual-explainer/blob/main/SKILL.md
