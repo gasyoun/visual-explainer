@@ -1,0 +1,52 @@
+{
+  "slug": "context-window",
+  "lang": "ru",
+  "title": "Контекстное окно — сколько текста влезает в 128k токенов",
+  "description": "128 000 токенов — это не 128 000 символов. На санскрите в то же окно влезает в 2.1× меньше текста, чем на английском.",
+  "topnote": "visual-explainer · mini 02",
+  "data": "../token-tax/data/flores_results.json",
+  "strips": "../token-tax/data/token_strips.json",
+  "beats": [
+    {
+      "type": "hero",
+      "kicker": "visual-explainer · mini 02",
+      "title": "Контекстное <em>окно</em>",
+      "standfirst": "128 000 токенов — это не 128 000 символов. На санскрите в то же окно влезает в 2.1× меньше текста, чем на английском.",
+      "stats": [
+        {"value": "627k", "label": "символов EN"},
+        {"value": "476k", "label": "символов RU"},
+        {"value": "293k", "label": "символов SA"}
+      ],
+      "note": "128k токенов · GPT-4o (o200k) · плотность из замера FLORES-200."
+    },
+    {
+      "type": "prose",
+      "id": "math",
+      "kicker": "01 · Арифметика",
+      "title": "Одно окно, <em>разный</em> объём",
+      "html": "<p>Плотность языка — это сколько токенов уходит на 100 символов. У GPT-4o: английский — 20.4, русский — 26.9, хинди — 32.3, санскрит — 43.7.</p><p>Делим 128 000 на плотность и умножаем на 100. Получаем, сколько символов реально влезает в одно и то же окно.</p><div class=\"fit\"><div class=\"fit-row\"><span>EN</span><div class=\"fit-track\"><div class=\"fit-fill\" style=\"width:100%\"></div></div><b>627k</b></div><div class=\"fit-row\"><span>RU</span><div class=\"fit-track\"><div class=\"fit-fill ru\" style=\"width:75.9%\"></div></div><b>476k</b></div><div class=\"fit-row\"><span>HI</span><div class=\"fit-track\"><div class=\"fit-fill hi\" style=\"width:63.2%\"></div></div><b>396k</b></div><div class=\"fit-row\"><span>SA</span><div class=\"fit-track\"><div class=\"fit-fill sa\" style=\"width:46.7%\"></div></div><b>293k</b></div></div><p>Санскритский промпт заполняет окно в 2.1 раза быстрее английского. Если ваш агент читает документы на деванагари, планируйте контекст по худшему языку, а не по лучшему.</p><p class=\"note\">Формула: 128 000 / (токенов на 100 символов / 100). Округлено до тысяч.</p>"
+    },
+    {
+      "type": "trust",
+      "kicker": "02 · Проверь",
+      "title": "Откуда числа",
+      "html": "<p><b>Плотность.</b> 20.4 / 26.9 / 32.3 / 43.7 токена на 100 символов — GPT-4o (o200k), FLORES-200 devtest, 1 012 предложений.</p><p><b>Оговорка.</b> Это средняя плотность корпуса, а не гарантия для вашего документа. Длинные слова, цифры и код меняют счёт; проверяйте на своём тексте.</p>",
+      "links": [
+        {"label": "Флагман: налог на токены", "href": "../token-tax/index.html"},
+        {"label": "CSV с замерами", "href": "../token-tax/data/flores_results.csv"},
+        {"label": "Скрипт замера", "href": "../../tools/measure_tokens.py"},
+        {"label": "Скилл", "href": "../../SKILL.md"}
+      ],
+      "made_with": "Собрано скиллом <a href=\"../../SKILL.md\">visual-explainer</a> · 24-10-2026."
+    }
+  ],
+  "footer": {
+    "brand": "visual-explainer",
+    "note": "Мини-пример: тот же замер, другой вопрос.",
+    "links": [
+      {"label": "Все примеры", "href": "../../"},
+      {"label": "Флагман", "href": "../token-tax/index.html"},
+      {"label": "Скилл", "href": "../../SKILL.md"}
+    ]
+  }
+}

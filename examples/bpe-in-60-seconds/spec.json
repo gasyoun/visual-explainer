@@ -1,0 +1,76 @@
+{
+  "slug": "bpe-in-60-seconds",
+  "lang": "ru",
+  "title": "BPE за 60 секунд — visual-explainer",
+  "description": "Почему токен — это не слово и не буква: один принцип, одна полоска, один вывод.",
+  "topnote": "visual-explainer · mini 01",
+  "data": "../token-tax/data/flores_results.json",
+  "strips": "../token-tax/data/token_strips.json",
+  "beats": [
+    {
+      "type": "hero",
+      "kicker": "visual-explainer · mini 01",
+      "title": "BPE за <em>60 секунд</em>",
+      "standfirst": "Почему «токен» — это не слово и не буква. Один принцип, одна полоска, один вывод.",
+      "stats": [
+        {"value": "1 / 2 / 3", "label": "байта на символ"},
+        {"value": "0", "label": "обрывков у GPT-4o"},
+        {"value": "16", "label": "обрывков у GPT-4 на одном слове"}
+      ],
+      "note": "Мини-пример visual-explainer: один концепт, одна полоска, один вывод. Данные — из замера FLORES-200."
+    },
+    {
+      "type": "token-demo",
+      "kicker": "01 · Принцип",
+      "title": "Склеиваем <em>частые пары</em>",
+      "intro": "<p>BPE не придумывает словарь. Он начинает с отдельных байтов и на каждом шаге склеивает самую частую пару. Повторить миллион раз — получить токены.</p><p>Переключи GPT-4o на GPT-4: одна и та же фраза, но деванагари рассыпается на байты.</p>",
+      "default_lang": "SA",
+      "default_enc": "o200k",
+      "note": "Полоски предтокенизированы в <code>tools/make_token_strips.py</code>. Серые чипы — обрывки UTF-8."
+    },
+    {
+      "type": "bytes",
+      "kicker": "02 · Байты",
+      "title": "Почему деванагари <em>дороже</em>",
+      "intro": "<p>Английская буква — 1 байт UTF-8, русская — 2, деванагари — 3. Чем больше байтов на символ, тем реже целый символ попадал в словарь.</p>",
+      "table": [
+        {"char": "a", "lang": "en", "bytes": "1", "example": "English"},
+        {"char": "а", "lang": "ru", "bytes": "2", "example": "Русский"},
+        {"char": "क", "lang": "sa", "bytes": "3", "example": "संस्कृतम्"}
+      ],
+      "word": {
+        "key": "word_sa",
+        "lang": "SA",
+        "text": "कर्मण्येवाधिकारस्ते",
+        "sub": "Одно слово. Сверху — GPT-4o, снизу — GPT-4.",
+        "rows": [
+          {"enc": "o200k", "label": "GPT-4o (o200k)"},
+          {"enc": "cl100k", "label": "GPT-4 (cl100k)"}
+        ]
+      },
+      "outro": "<p>Вот и весь фокус: «налог» — это не заговор, а арифметика байтов. Чем реже байтовая пара встречалась в корпусе, тем больше токенов уходит на текст.</p>"
+    },
+    {
+      "type": "trust",
+      "kicker": "03 · Проверь",
+      "title": "Данные и код",
+      "html": "<p><b>Источник.</b> FLORES-200 devtest, 1 012 предложений, пять токенизаторов; полный замер — на флагманской странице.</p><p><b>Оговорка.</b> Это объяснение принципа, а не оценка качества моделей. Токенизатор — не модель.</p>",
+      "links": [
+        {"label": "Флагман: налог на токены", "href": "../token-tax/index.html"},
+        {"label": "CSV с замерами", "href": "../token-tax/data/flores_results.csv"},
+        {"label": "Скрипт замера", "href": "../../tools/measure_tokens.py"},
+        {"label": "Скилл", "href": "../../SKILL.md"}
+      ],
+      "made_with": "Собрано скиллом <a href=\"../../SKILL.md\">visual-explainer</a> · 24-10-2026."
+    }
+  ],
+  "footer": {
+    "brand": "visual-explainer",
+    "note": "Мини-пример: один концепт, одна страница, один вывод.",
+    "links": [
+      {"label": "Все примеры", "href": "../../"},
+      {"label": "Флагман", "href": "../token-tax/index.html"},
+      {"label": "Скилл", "href": "../../SKILL.md"}
+    ]
+  }
+}

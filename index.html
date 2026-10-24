@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>visual-explainer — один spec, один HTML</title>
+<meta name="description" content="Skill visual-explainer: три HTML-страницы, собранные одним генератором. Флагман про токены, мини про BPE и мини про контекстное окно.">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAF7F2;--surface:#F1ECE2;--ink:#20242C;--muted:#6B6F76;--accent:#A32035;--emerald:#0D7F63;--ochre:#B07C1F;--rule:#D8D0C0;--serif:"Fraunces",Georgia,serif;--sans:"Libre Franklin",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--mono:ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:.18em}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bg);padding:10px 14px}
+.skip:focus{left:12px;top:12px}
+.topbar{border-bottom:1px solid var(--rule);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:44px}
+.brand{font-weight:600;color:var(--ink)}
+.hero{padding:92px 0 58px;border-bottom:1px solid var(--rule)}
+.kicker{font:600 11px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(54px,8.6vw,122px);line-height:.88;letter-spacing:-.045em;margin:20px 0 0;max-width:1000px}
+h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+.standfirst{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.2vw,28px);line-height:1.25;max-width:720px;margin:28px 0 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:44px 0 0}
+.stat{background:var(--bg);padding:18px}
+.stat b{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(26px,3.2vw,42px);line-height:1;white-space:nowrap}
+.stat span{display:block;margin-top:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat:nth-child(1) b{color:var(--accent)}
+.stat:nth-child(3) b{color:var(--emerald)}
+.section{padding:66px 0;border-bottom:1px solid var(--rule)}
+.section h2{font-family:var(--serif);font-weight:900;font-size:clamp(32px,4.2vw,54px);line-height:1;letter-spacing:-.03em;margin:12px 0 26px}
+.section h2 em{font-style:italic;font-weight:400;color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px;border-top:1px solid var(--ink)}
+.card{display:block;padding:22px 0 20px;border-bottom:1px solid var(--rule);text-decoration:none;color:inherit}
+.card:hover h3{color:var(--accent)}
+.card-num{font-family:var(--serif);font-weight:900;font-size:clamp(40px,4.8vw,62px);line-height:1;color:var(--accent);letter-spacing:-.02em}
+.card:nth-child(3) .card-num{color:var(--emerald)}
+.card-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.card h3{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.1;margin:12px 0 8px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.card .go{display:inline-block;margin:14px 0 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--accent)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px;border-top:1px solid var(--ink)}
+.step{padding:20px 0;border-bottom:1px solid var(--rule)}
+.step .n{font:600 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.step h3{font-family:var(--serif);font-weight:600;font-size:22px;margin:8px 0 6px}
+.step p{margin:0;color:var(--muted);font-size:14px}
+code{font:500 .88em/1.2 var(--mono);background:var(--surface);padding:1px 4px;border:1px solid var(--rule)}
+.cmd{background:var(--ink);color:var(--bg);padding:18px 20px;font:500 13px/1.6 var(--mono);overflow-x:auto;margin:22px 0 0;white-space:pre}
+.inside{display:grid;grid-template-columns:1fr 1fr;gap:0 44px}
+.inside ul{list-style:none;padding:0;margin:0}
+.inside li{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--rule);padding:10px 0;font-size:14px}
+.inside li span{color:var(--muted)}
+.inside a{text-decoration:none;border-bottom:1px solid var(--rule)}
+.inside a:hover{border-bottom-color:var(--accent)}
+.footer{background:var(--ink);color:var(--bg);padding:44px 0 38px}
+.footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:flex-start}
+.footer .f-brand{font-family:var(--serif);font-size:26px;font-weight:600}
+.footer p{margin:6px 0 0;color:#b9b4a8;font-size:13px;max-width:520px}
+.footer a{color:var(--bg);text-decoration:none;border-bottom:1px solid #55504a}
+.footer .f-links{display:flex;flex-direction:column;gap:6px;font-size:13px;text-align:right}
+@media(max-width:900px){.cards,.steps{grid-template-columns:1fr}.inside{grid-template-columns:1fr}.stat b{font-size:30px}}
+@media(max-width:680px){.wrap{padding:0 20px}.hero{padding:56px 0 40px}h1{font-size:clamp(44px,13vw,72px)}.standfirst{font-size:20px}.stats{grid-template-columns:1fr}.stat{display:block}.stat span{text-align:left}.footer .f-links{text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+<header class="topbar"><div class="wrap"><span class="brand">visual-explainer</span><span>skill · 24-10-2026</span></div></header>
+<main id="main">
+<section class="hero"><div class="wrap">
+  <div class="kicker">visual-explainer · skill</div>
+  <h1>Один spec —<br><em>один</em> HTML</h1>
+  <p class="standfirst">Три страницы, собранные одним генератором: флагман про токены, мини про BPE и мини про контекстное окно. Один файл, без внешнего JS, с данными и оговорками.</p>
+  <div class="stats">
+    <div class="stat"><b>3</b><span>страницы из одного шаблона</span></div>
+    <div class="stat"><b>1</b><span>команда на сборку</span></div>
+    <div class="stat"><b>0</b><span>внешних JS-зависимостей</span></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="kicker">01 · примеры</div>
+  <h2>Три вопроса, <em>три</em> страницы</h2>
+  <div class="cards">
+    <a class="card" href="examples/token-tax/">
+      <div class="card-kicker">01 · флагман</div>
+      <div class="card-num">1.42×</div>
+      <h3>Налог на токены</h3>
+      <p>Почему русский и санскрит дороже в LLM. 1 012 предложений FLORES-200, 5 токенизаторов, калькулятор и trust-блок.</p>
+      <span class="go">открыть →</span>
+    </a>
+    <a class="card" href="examples/bpe-in-60-seconds/">
+      <div class="card-kicker">02 · мини</div>
+      <div class="card-num">1 / 2 / 3</div>
+      <h3>BPE за 60 секунд</h3>
+      <p>Почему токен — это не слово и не буква. Одна полоска, одна таблица байтов, один вывод.</p>
+      <span class="go">открыть →</span>
+    </a>
+    <a class="card" href="examples/context-window/">
+      <div class="card-kicker">03 · мини</div>
+      <div class="card-num">627k → 293k</div>
+      <h3>Контекстное окно</h3>
+      <p>Сколько текста влезает в 128k токенов на английском, русском, хинди и санскрите.</p>
+      <span class="go">открыть →</span>
+    </a>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="kicker">02 · как это работает</div>
+  <h2>Spec → <em>build</em> → check</h2>
+  <div class="steps">
+    <div class="step"><div class="n">01</div><h3>spec.json</h3><p>Аудитория, тезис, биты, данные. Один JSON, который читает человек и машина.</p></div>
+    <div class="step"><div class="n">02</div><h3>build.py</h3><p>Собирает один HTML: inline CSS и JS, данные из committed JSON, никаких сборщиков.</p></div>
+    <div class="step"><div class="n">03</div><h3>check.py + render.py</h3><p>Проверяет trust-блок, ссылки, mobile и внешний JS; рендерит desktop и mobile PNG для ревью.</p></div>
+  </div>
+  <div class="cmd">python tools/build.py examples/token-tax/spec.json</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="kicker">03 · что внутри</div>
+  <h2>Скилл, <em>а не</em> одна страница</h2>
+  <div class="inside">
+    <ul>
+      <li><a href="SKILL.md">SKILL.md</a><span>контракт и hard rules</span></li>
+      <li><a href="tools/build.py">tools/build.py</a><span>spec → HTML</span></li>
+      <li><a href="tools/check.py">tools/check.py</a><span>fail-closed проверки</span></li>
+      <li><a href="tools/render.py">tools/render.py</a><span>desktop + mobile PNG</span></li>
+    </ul>
+    <ul>
+      <li><a href="templates/explainer.css">templates/explainer.css</a><span>editorial-токены</span></li>
+      <li><a href="examples/token-tax/data/flores_results.csv">flores_results.csv</a><span>сырые замеры</span></li>
+      <li><a href="tools/measure_tokens.py">measure_tokens.py</a><span>воспроизводимый аудит</span></li>
+      <li><a href="docs/METHOD.md">docs/METHOD.md</a><span>метод и оговорки</span></li>
+    </ul>
+  </div>
+</div></section>
+</main>
+
+<footer class="footer"><div class="wrap">
+  <div><div class="f-brand">visual-explainer</div><p>Один spec, один HTML. Собрано для #задание6 «AI для визуализаций»; флагман — про то, сколько стоит язык в токенах.</p></div>
+  <div class="f-links">
+    <a href="https://github.com/gasyoun/visual-explainer">Репозиторий</a>
+    <a href="SKILL.md">Скилл</a>
+    <a href="examples/token-tax/">Флагман</a>
+  </div>
+</div></footer>
+</body>
+</html>

@@ -1,9 +1,10 @@
 # visual-explainer
 
 A personal skill that turns a concept + data into a single-file HTML explainer —
-plus `token-tax`, the first artifact it generated.
+and `token-tax`, the page it generated as its first case.
 
-**Status:** build in progress · deadline 25-10-2026 20:00 MSK.
+**Live:** <https://gasyoun.github.io/visual-explainer/>
+**Skill:** [SKILL.md](SKILL.md)
 
 ## token-tax
 
@@ -24,6 +25,21 @@ tokenizer learned Russian but not Devanagari, DeepSeek is the most
 Devanagari-friendly of the five, and Qwen is the least, despite its
 multilingual positioning.
 
+## What's inside
+
+| Path | What it is |
+|---|---|
+| [`SKILL.md`](SKILL.md) | the skill: contract, workflow, hard rules |
+| [`tools/build.py`](tools/build.py) | `spec.json` → one HTML file |
+| [`tools/check.py`](tools/check.py) | fail-closed checks (trust block, links, mobile, external JS) |
+| [`tools/render.py`](tools/render.py) | desktop + mobile PNGs for the render review |
+| [`tools/measure_tokens.py`](tools/measure_tokens.py) | reproducible FLORES-200 audit |
+| [`examples/token-tax/`](examples/token-tax/) | flagship: the token tax |
+| [`examples/bpe-in-60-seconds/`](examples/bpe-in-60-seconds/) | mini: one concept, one strip |
+| [`examples/context-window/`](examples/context-window/) | mini: 128k tokens on four languages |
+| [`index.html`](index.html) | the gallery / landing page |
+| [`docs/METHOD.md`](docs/METHOD.md) | corpus, metrics, caveats |
+
 ## Reproduce
 
 ```bash
@@ -35,13 +51,12 @@ Outputs: `examples/token-tax/data/flores_results.json`, `.csv`,
 `case_studies.json`. Corpus: FLORES-200 devtest, CC-BY-SA 4.0. Tokenizer
 revisions and library versions are recorded in the JSON.
 
-## Layout
+Build a page:
 
-```
-tools/measure_tokens.py      # reproducible audit
-examples/token-tax/data/     # measured data
-DECISIONS_2026-10-24.md      # the ten decisions behind the build
-PLAN.md                      # scope, method, schedule, acceptance
+```bash
+python tools/build.py examples/token-tax/spec.json
+python tools/check.py examples/token-tax/index.html
+python tools/render.py examples/token-tax/index.html
 ```
 
 ## License
