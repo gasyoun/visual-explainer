@@ -37,6 +37,7 @@ PAGE = """<!doctype html>
 <title>{title}</title>
 <meta name="description" content="{description}">
 <meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23A32035'/%3E%3Ctext x='16' y='23' font-family='Georgia' font-size='22' fill='%23FAF7F2' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
@@ -171,7 +172,7 @@ def render_token_demo(beat: dict, strips: dict) -> str:
         + "</div>"
         + f'<p class="note">{raw(beat.get("note", ""))}</p>'
         + "</div></section>"
-        + f'<script type="application/json" id="strip-data">{json.dumps(rows, ensure_ascii=False)}</script>'
+        + f'<script type="application/json" id="strip-data">{json.dumps(strips, ensure_ascii=False)}</script>'
     )
 
 
