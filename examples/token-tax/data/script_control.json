@@ -1,0 +1,274 @@
+{
+ "meta": {
+  "corpus": "FLORES-200 devtest",
+  "n_sentences": 1012,
+  "date": "2026-10-25",
+  "schemes": {
+   "RU": "cyrtranslit ASCII Latin",
+   "HI": "HK (ASCII) + IAST (diacritics)",
+   "SA": "HK (ASCII) + IAST (diacritics)"
+  },
+  "libraries": {
+   "indic-transliteration": "2.3.82",
+   "cyrtranslit": "1.2.0"
+  },
+  "tokenizers": {
+   "gpt-4o (o200k)": {
+    "kind": "tiktoken",
+    "encoding": "o200k_base",
+    "version": "0.14.0"
+   },
+   "gpt-4 (cl100k)": {
+    "kind": "tiktoken",
+    "encoding": "cl100k_base",
+    "version": "0.14.0"
+   },
+   "Qwen2.5": {
+    "kind": "hf",
+    "repo": "Qwen/Qwen2.5-7B",
+    "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+    "vocab_size": 151643
+   },
+   "DeepSeek-V3": {
+    "kind": "hf",
+    "repo": "deepseek-ai/DeepSeek-V3",
+    "revision": "e815299b0bcbac849fa540c768ef21845365c9eb",
+    "vocab_size": 128000
+   },
+   "Mistral-7B": {
+    "kind": "hf",
+    "repo": "mistralai/Mistral-7B-v0.3",
+    "revision": "caa1feb0e54d415e2df31207e5f4e273e33509b1",
+    "vocab_size": 32768
+   }
+  },
+  "caveat": "Transliteration changes orthography and diacritics; this is a controlled test of script, not a proof that Latin is better. The residual includes language, vocabulary and training-data effects."
+ },
+ "results": {
+  "gpt-4o (o200k)": {
+   "RU": {
+    "native_tokens": 38188,
+    "native_en": 1.421,
+    "schemes": {
+     "ASCII": {
+      "tokens_total": 56595,
+      "latin_native": 1.482,
+      "latin_en": 2.106
+     }
+    }
+   },
+   "HI": {
+    "native_tokens": 42276,
+    "native_en": 1.573,
+    "schemes": {
+     "HK": {
+      "tokens_total": 64131,
+      "latin_native": 1.517,
+      "latin_en": 2.386
+     },
+     "IAST": {
+      "tokens_total": 68490,
+      "latin_native": 1.62,
+      "latin_en": 2.549
+     }
+    }
+   },
+   "SA": {
+    "native_tokens": 56029,
+    "native_en": 2.085,
+    "schemes": {
+     "HK": {
+      "tokens_total": 59243,
+      "latin_native": 1.057,
+      "latin_en": 2.205
+     },
+     "IAST": {
+      "tokens_total": 65999,
+      "latin_native": 1.178,
+      "latin_en": 2.456
+     }
+    }
+   }
+  },
+  "gpt-4 (cl100k)": {
+   "RU": {
+    "native_tokens": 66928,
+    "native_en": 2.462,
+    "schemes": {
+     "ASCII": {
+      "tokens_total": 62133,
+      "latin_native": 0.928,
+      "latin_en": 2.286
+     }
+    }
+   },
+   "HI": {
+    "native_tokens": 129348,
+    "native_en": 4.759,
+    "schemes": {
+     "HK": {
+      "tokens_total": 69626,
+      "latin_native": 0.538,
+      "latin_en": 2.561
+     },
+     "IAST": {
+      "tokens_total": 89858,
+      "latin_native": 0.695,
+      "latin_en": 3.306
+     }
+    }
+   },
+   "SA": {
+    "native_tokens": 134233,
+    "native_en": 4.938,
+    "schemes": {
+     "HK": {
+      "tokens_total": 66382,
+      "latin_native": 0.495,
+      "latin_en": 2.442
+     },
+     "IAST": {
+      "tokens_total": 98062,
+      "latin_native": 0.731,
+      "latin_en": 3.608
+     }
+    }
+   }
+  },
+  "Qwen2.5": {
+   "RU": {
+    "native_tokens": 48471,
+    "native_en": 1.755,
+    "schemes": {
+     "ASCII": {
+      "tokens_total": 62525,
+      "latin_native": 1.29,
+      "latin_en": 2.264
+     }
+    }
+   },
+   "HI": {
+    "native_tokens": 121957,
+    "native_en": 4.415,
+    "schemes": {
+     "HK": {
+      "tokens_total": 70000,
+      "latin_native": 0.574,
+      "latin_en": 2.534
+     },
+     "IAST": {
+      "tokens_total": 77497,
+      "latin_native": 0.635,
+      "latin_en": 2.806
+     }
+    }
+   },
+   "SA": {
+    "native_tokens": 124486,
+    "native_en": 4.507,
+    "schemes": {
+     "HK": {
+      "tokens_total": 66664,
+      "latin_native": 0.536,
+      "latin_en": 2.414
+     },
+     "IAST": {
+      "tokens_total": 76862,
+      "latin_native": 0.617,
+      "latin_en": 2.783
+     }
+    }
+   }
+  },
+  "DeepSeek-V3": {
+   "RU": {
+    "native_tokens": 42789,
+    "native_en": 1.582,
+    "schemes": {
+     "ASCII": {
+      "tokens_total": 60588,
+      "latin_native": 1.416,
+      "latin_en": 2.241
+     }
+    }
+   },
+   "HI": {
+    "native_tokens": 75573,
+    "native_en": 2.795,
+    "schemes": {
+     "HK": {
+      "tokens_total": 68392,
+      "latin_native": 0.905,
+      "latin_en": 2.529
+     },
+     "IAST": {
+      "tokens_total": 74032,
+      "latin_native": 0.98,
+      "latin_en": 2.738
+     }
+    }
+   },
+   "SA": {
+    "native_tokens": 77218,
+    "native_en": 2.856,
+    "schemes": {
+     "HK": {
+      "tokens_total": 64747,
+      "latin_native": 0.838,
+      "latin_en": 2.394
+     },
+     "IAST": {
+      "tokens_total": 72643,
+      "latin_native": 0.941,
+      "latin_en": 2.686
+     }
+    }
+   }
+  },
+  "Mistral-7B": {
+   "RU": {
+    "native_tokens": 55637,
+    "native_en": 1.855,
+    "schemes": {
+     "ASCII": {
+      "tokens_total": 67682,
+      "latin_native": 1.216,
+      "latin_en": 2.256
+     }
+    }
+   },
+   "HI": {
+    "native_tokens": 136600,
+    "native_en": 4.554,
+    "schemes": {
+     "HK": {
+      "tokens_total": 76919,
+      "latin_native": 0.563,
+      "latin_en": 2.564
+     },
+     "IAST": {
+      "tokens_total": 82661,
+      "latin_native": 0.605,
+      "latin_en": 2.756
+     }
+    }
+   },
+   "SA": {
+    "native_tokens": 137964,
+    "native_en": 4.599,
+    "schemes": {
+     "HK": {
+      "tokens_total": 71412,
+      "latin_native": 0.518,
+      "latin_en": 2.381
+     },
+     "IAST": {
+      "tokens_total": 79927,
+      "latin_native": 0.579,
+      "latin_en": 2.664
+     }
+    }
+   }
+  }
+ }
+}

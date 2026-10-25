@@ -9,8 +9,8 @@ and `token-tax`, the page it generated as its first case.
 ## token-tax
 
 The same meaning costs **1.4–2.5×** more tokens in Russian and **2.1–4.9×** more
-in Sanskrit, depending on the tokenizer. Measured on 1,012 aligned FLORES-200
-sentences across five openly available tokenizers:
+in Hindi and Sanskrit, depending on the tokenizer. Measured on 1,012 aligned
+FLORES-200 sentences across five openly available tokenizers:
 
 | Tokenizer | EN | RU | HI | SA |
 |---|---:|---:|---:|---:|
@@ -21,9 +21,16 @@ sentences across five openly available tokenizers:
 | Mistral-7B-v0.3 | 29,997 | 1.85× | 4.55× | 4.60× |
 
 The finding is not "Russian is expensive" — it is that the newest OpenAI
-tokenizer learned Russian but not Devanagari, DeepSeek is the most
-Devanagari-friendly of the five, and Qwen is the least, despite its
+tokenizer learned Russian but not Hindi and Sanskrit; DeepSeek is the most
+Devanagari-friendly of the five (2.86×), while Qwen is 4.51× despite its
 multilingual positioning.
+
+A **script control** — the same sentences in Latin script (ASCII for Russian,
+HK/IAST for Hindi and Sanskrit) — shows the effect is tokenizer-dependent:
+**0.49–1.62×** Latin/native. On GPT-4o transliteration does not help
+(1.06–1.62×); on GPT-4 it halves the count (0.49–0.54×); on DeepSeek it is
+nearly neutral (0.84–0.98×). Devanagari is a script, not a language: the script
+sets a floor, the tokenizer's vocabulary decides the bill.
 
 ## What's inside
 
@@ -34,6 +41,8 @@ multilingual positioning.
 | [`tools/check.py`](tools/check.py) | fail-closed checks (trust block, links, mobile, external JS) |
 | [`tools/render.py`](tools/render.py) | desktop + mobile PNGs for the render review |
 | [`tools/measure_tokens.py`](tools/measure_tokens.py) | reproducible FLORES-200 audit |
+| [`tools/measure_script_control.py`](tools/measure_script_control.py) | script control: the same sentences in Latin |
+| [`examples/token-tax/data/script_control.csv`](examples/token-tax/data/script_control.csv) | Latin/native ratios per tokenizer |
 | [`examples/token-tax/`](examples/token-tax/) | flagship: the token tax |
 | [`examples/bpe-in-60-seconds/`](examples/bpe-in-60-seconds/) | mini: one concept, one strip |
 | [`examples/context-window/`](examples/context-window/) | mini: 128k tokens on four languages |
@@ -50,6 +59,16 @@ uv run --with tiktoken --with transformers --with huggingface_hub \
 Outputs: `examples/token-tax/data/flores_results.json`, `.csv`,
 `case_studies.json`. Corpus: FLORES-200 devtest, CC-BY-SA 4.0. Tokenizer
 revisions and library versions are recorded in the JSON.
+
+Script control:
+
+```bash
+uv run --with tiktoken --with transformers --with huggingface_hub \
+  --with indic-transliteration --with cyrtranslit \
+  python tools/measure_script_control.py
+```
+
+Outputs: `examples/token-tax/data/script_control.json`, `.csv`.
 
 Build a page:
 

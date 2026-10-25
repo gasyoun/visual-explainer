@@ -92,6 +92,14 @@ code{font:500 .86em/1.2 var(--mono);background:var(--surface);padding:1px 4px;bo
 .bytes-table td:first-child{font-size:22px;font-family:var(--serif)}
 .bytes-table td.deva{font-family:"Kohinoor Devanagari","Noto Serif Devanagari","Noto Sans Devanagari",var(--serif);font-weight:400}
 .bytes-table td:nth-child(2){font-family:var(--mono);font-size:13px;color:var(--accent)}
+.script-table{min-width:660px}
+.script-table td:first-child{font-size:13px;font-family:var(--sans)}
+.script-table td:nth-child(2){font-family:var(--sans);font-size:13px;color:inherit}
+.script-table .num{text-align:right}
+.script-table th span{display:block;margin-top:2px;font-size:9px;letter-spacing:.04em;text-transform:none;font-weight:400;color:var(--muted)}
+.script-table td.cheap{color:var(--emerald);font-weight:600}
+.script-table td.dear{color:var(--accent);font-weight:600}
+.script-table td.same{color:var(--muted)}
 .word-block{border-top:1px solid var(--ink);padding:18px 0 0;margin:0 0 6px}
 .word-block h3{font-family:var(--serif);font-size:24px;margin:0 0 4px;font-weight:600}
 .word-block h3.deva{font-family:"Kohinoor Devanagari","Noto Serif Devanagari","Noto Sans Devanagari",var(--serif);font-weight:400;font-size:clamp(28px,3.2vw,42px);line-height:1.5;letter-spacing:0}
@@ -211,6 +219,11 @@ code{font:500 .86em/1.2 var(--mono);background:var(--surface);padding:1px 4px;bo
   .seg button{padding:8px 9px;font-size:11px}
   .word-row{grid-template-columns:1fr;gap:6px}
   .word-row .tag{padding-top:0}
+  .script-table{min-width:0}
+  .script-table th:nth-child(4),.script-table td:nth-child(4),
+  .script-table th:nth-child(6),.script-table td:nth-child(6){display:none}
+  .script-table td:first-child{font-size:12px}
+  .script-table th,.script-table td{padding:7px 6px}
   .finding{grid-template-columns:1fr;gap:6px}
   .finding b{font-size:30px}
   .footer .f-links{text-align:left}

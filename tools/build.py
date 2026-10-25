@@ -274,6 +274,47 @@ def render_bars(beat: dict, data: dict) -> str:
     )
 
 
+def render_script_control(beat: dict, script: dict) -> str:
+    results = script["results"]
+
+    def cell(row: dict, lang: str, scheme: str) -> str:
+        value = row[lang]["schemes"][scheme]["latin_native"]
+        cls = "cheap" if value < 0.95 else ("dear" if value > 1.05 else "same")
+        return f'<td class="num {cls}">{value:.2f}×</td>'
+
+    rows = "".join(
+        f'<tr><td>{esc(display_name(name))}</td>'
+        + cell(row, "RU", "ASCII")
+        + cell(row, "HI", "HK")
+        + cell(row, "HI", "IAST")
+        + cell(row, "SA", "HK")
+        + cell(row, "SA", "IAST")
+        + "</tr>"
+        for name, row in results.items()
+    )
+    findings = "".join(
+        f'<div class="finding"><b>{esc(item["n"])}</b><div><h3>{raw(item["title"])}</h3>'
+        f'<p>{raw(item["text"])}</p></div></div>'
+        for item in beat.get("findings", [])
+    )
+    return (
+        section_open(beat, "script")
+        + intro_html(beat)
+        + '<div class="table-wrap"><table class="bytes-table script-table">'
+          '<thead><tr><th>Токенизатор</th>'
+          '<th class="num">RU<br><span>лат./кир.</span></th>'
+          '<th class="num">HI<br><span>HK/дева.</span></th>'
+          '<th class="num">HI<br><span>IAST/дева.</span></th>'
+          '<th class="num">SA<br><span>HK/дева.</span></th>'
+          '<th class="num">SA<br><span>IAST/дева.</span></th>'
+          f'</tr></thead><tbody>{rows}</tbody></table></div>'
+        + f'<p class="note">{raw(beat.get("caption", ""))}</p>'
+        + f'<div class="findings">{findings}</div>'
+        + f'<p class="note">{raw(beat.get("note", ""))}</p>'
+        + "</div></section>"
+    )
+
+
 def render_bytes(beat: dict, strips: dict) -> str:
     def char_td(row: dict) -> str:
         attrs = ""
@@ -558,11 +599,17 @@ def build(spec_path: Path) -> Path:
     base = spec_path.parent
     data = json.loads((base / spec["data"]).read_text(encoding="utf-8"))
     strips = json.loads((base / spec["strips"]).read_text(encoding="utf-8"))
+    script = (
+        json.loads((base / spec["script_control"]).read_text(encoding="utf-8"))
+        if spec.get("script_control")
+        else None
+    )
 
     renderers = {
         "hero": lambda b: render_hero(b),
         "token-demo": lambda b: render_token_demo(b, strips),
         "bars": lambda b: render_bars(b, data),
+        "script-control": lambda b: render_script_control(b, script),
         "bytes": lambda b: render_bytes(b, strips),
         "calculator": lambda b: render_calculator(b, data),
         "tactics": lambda b: render_tactics(b),
