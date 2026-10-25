@@ -46,6 +46,7 @@ in directly.
 | [`tools/render.py`](tools/render.py) | desktop + mobile PNGs for the render review |
 | [`tools/measure_tokens.py`](tools/measure_tokens.py) | reproducible FLORES-200 audit |
 | [`tools/measure_script_control.py`](tools/measure_script_control.py) | script control: the same sentences in Latin |
+| [`tools/measure_language_mix.py`](tools/measure_language_mix.py) | sample prompt script shares (counts only) |
 | [`examples/token-tax/data/script_control.csv`](examples/token-tax/data/script_control.csv) | Latin/native ratios per tokenizer |
 | [`examples/token-tax/`](examples/token-tax/) | flagship: the token tax |
 | [`examples/bpe-in-60-seconds/`](examples/bpe-in-60-seconds/) | mini: one concept, one strip |
