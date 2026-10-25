@@ -165,6 +165,7 @@ def render_token_demo(beat: dict, strips: dict) -> str:
           f'{plural(row["count"], "токен", "токена", "токенов")} · '
           f'{row["chars"]} {plural(row["chars"], "символ", "символа", "символов")} · '
           f'{row["tokens_per_100_chars"]} на 100 символов</div>'
+        + '<button type="button" class="demo-play" id="demo-play" aria-pressed="false">▶ 10 секунд</button>'
         + "</div>"
         + f'<div class="chips" id="strip-chips">{chips(row["tokens"])}</div>'
         + '<div class="legend"><span><i></i>токен</span>'
@@ -551,6 +552,41 @@ SCRIPT = r"""
     document.querySelectorAll('[data-strip-enc]').forEach(function (b) {
       b.addEventListener('click', function () { enc = b.dataset.stripEnc; render(); });
     });
+
+    var play = document.getElementById('demo-play');
+    var order = ['EN', 'RU', 'HI', 'SA'];
+    var idx = order.indexOf(lang);
+    var timer = null;
+    var autoClick = false;
+    function stopPlay() {
+      if (timer) { clearInterval(timer); timer = null; }
+      if (play) {
+        play.setAttribute('aria-pressed', 'false');
+        play.textContent = '▶ 10 секунд';
+      }
+    }
+    function stepPlay() {
+      idx = (idx + 1) % order.length;
+      var b = document.querySelector('[data-strip-lang="' + order[idx] + '"]');
+      if (b) {
+        autoClick = true;
+        b.click();
+        autoClick = false;
+      }
+    }
+    if (play) {
+      play.addEventListener('click', function () {
+        if (timer) { stopPlay(); return; }
+        play.setAttribute('aria-pressed', 'true');
+        play.textContent = '❚❚ пауза';
+        timer = setInterval(stepPlay, 2400);
+      });
+    }
+    document.querySelectorAll('[data-strip-lang]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (timer && !autoClick) stopPlay();
+      });
+    });
   }
 
   var calcEl = document.getElementById('calc-data');
@@ -609,6 +645,20 @@ SCRIPT = r"""
     [chars, price].forEach(function (el) { el.addEventListener('input', calc); });
     [unit, tok, langSel].forEach(function (el) { el.addEventListener('change', calc); });
     calc();
+
+    document.querySelectorAll('[data-case]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        unit.value = 'tokens';
+        chars.value = '4368000';
+        tok.value = 'gpt-4o (o200k)';
+        langSel.value = 'SA';
+        chars.dispatchEvent(new Event('input', {bubbles: true}));
+        unit.dispatchEvent(new Event('change', {bubbles: true}));
+        tok.dispatchEvent(new Event('change', {bubbles: true}));
+        langSel.dispatchEvent(new Event('change', {bubbles: true}));
+        document.getElementById('bill').scrollIntoView({behavior: 'smooth'});
+      });
+    });
   }
 })();
 """
