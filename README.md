@@ -32,6 +32,10 @@ HK/IAST for Hindi and Sanskrit) — shows the effect is tokenizer-dependent:
 nearly neutral (0.84–0.98×). Devanagari is a script, not a language: the script
 sets a floor, the tokenizer's vocabulary decides the bill.
 
+The calculator accepts **characters or tokens**; in token mode the English
+equivalent is `tokens / ratio`, so a real all-time token volume can be plugged
+in directly.
+
 ## What's inside
 
 | Path | What it is |

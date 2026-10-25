@@ -378,6 +378,7 @@ def render_calculator(beat: dict, data: dict) -> str:
                 lang: {
                     "tpc": row[lang]["tokens_per_100_chars"],
                     "tpw": row[lang]["tokens_per_word"],
+                    "ratio": row[lang]["ratio_total"],
                 }
                 for lang in ("EN", "RU", "HI", "SA")
             }
@@ -391,7 +392,10 @@ def render_calculator(beat: dict, data: dict) -> str:
         + intro_html(beat)
         + '<div class="calc">'
           '<div class="calc-form">'
-          '<div class="field"><label for="calc-chars">Символов в месяц</label>'
+          '<div class="field"><label for="calc-unit">Единица объёма</label>'
+          '<select id="calc-unit"><option value="chars" selected>Символы</option>'
+          '<option value="tokens">Токены</option></select></div>'
+          '<div class="field"><label for="calc-chars" id="calc-vol-label">Символов в месяц</label>'
           '<input id="calc-chars" type="number" min="0" step="10000" value="1000000" inputmode="numeric"></div>'
           '<div class="field"><label for="calc-price">Цена за 1M токенов, $</label>'
           '<input id="calc-price" type="number" min="0" step="0.01" value="2.50" inputmode="decimal"></div>'
@@ -400,13 +404,15 @@ def render_calculator(beat: dict, data: dict) -> str:
           f'<p class="hint">{raw(beat.get("hint", ""))}</p>'
           "</div>"
           '<div class="calc-out">'
-          '<div class="calc-line"><span class="k">Токенов в месяц</span>'
+          '<div class="calc-line"><span class="k" id="out-tokens-label">Токенов в месяц</span>'
           '<span class="v" id="out-tokens">—</span></div>'
-          '<div class="calc-line accent"><span class="k">Стоимость в месяц</span>'
+          '<div class="calc-line accent"><span class="k" id="out-cost-label">Стоимость в месяц</span>'
           '<span class="v" id="out-cost">—</span></div>'
           '<div class="calc-line green"><span class="k">Дороже английского</span>'
           '<span class="v" id="out-delta">—</span></div>'
-          '<div class="calc-line"><span class="k">Запрос на 2 000 символов</span>'
+          '<div class="calc-line"><span class="k">Переплата к английскому</span>'
+          '<span class="v" id="out-tax">—</span></div>'
+          '<div class="calc-line" id="calc-request-line"><span class="k">Запрос на 2 000 символов</span>'
           '<span class="v" id="out-request">—</span></div>'
           '<div class="calc-bar" aria-hidden="true">'
           '<div class="row"><span>EN</span><div class="track"><div class="fill" id="bar-en" style="width:0"></div></div>'
@@ -552,6 +558,7 @@ SCRIPT = r"""
     var data = JSON.parse(calcEl.textContent);
     var chars = document.getElementById('calc-chars');
     var price = document.getElementById('calc-price');
+    var unit = document.getElementById('calc-unit');
     var tok = document.getElementById('calc-tok');
     var langSel = document.getElementById('calc-lang');
     var nf = new Intl.NumberFormat('ru-RU');
@@ -564,18 +571,31 @@ SCRIPT = r"""
       var l = langSel.value;
       var c = num(chars);
       var p = num(price);
-      var enTokens = c * t.EN.tpc / 100;
-      var langTokens = c * t[l].tpc / 100;
+      var isTokens = unit.value === 'tokens';
+      var enTokens, langTokens;
+      if (isTokens) {
+        langTokens = c;
+        enTokens = c / t[l].ratio;
+      } else {
+        enTokens = c * t.EN.tpc / 100;
+        langTokens = c * t[l].tpc / 100;
+      }
       var enCost = enTokens / 1e6 * p;
       var langCost = langTokens / 1e6 * p;
       var delta = enTokens ? langTokens / enTokens : 0;
       var req = 2000 * t[l].tpc / 100;
 
+      document.getElementById('calc-vol-label').textContent = isTokens ? 'Токенов всего' : 'Символов в месяц';
+      document.getElementById('out-tokens-label').textContent = isTokens ? 'Токенов всего' : 'Токенов в месяц';
+      document.getElementById('out-cost-label').textContent = isTokens ? 'Стоимость' : 'Стоимость в месяц';
+      document.getElementById('calc-request-line').style.display = isTokens ? 'none' : '';
       document.getElementById('out-tokens').textContent = nf.format(Math.round(langTokens));
       document.getElementById('out-cost').innerHTML = cf.format(langCost) +
         '<small>при $' + p.toFixed(2) + ' / 1M</small>';
       document.getElementById('out-delta').innerHTML = '×' + delta.toFixed(2) +
         '<small>на тот же объём</small>';
+      document.getElementById('out-tax').innerHTML = cf.format(langCost - enCost) +
+        '<small>разница</small>';
       document.getElementById('out-request').innerHTML = nf.format(Math.round(req)) +
         '<small>' + (req / data.context * 100).toFixed(1) + '% от 128k</small>';
       document.getElementById('bar-lang-label').textContent = l;
@@ -587,7 +607,7 @@ SCRIPT = r"""
     }
 
     [chars, price].forEach(function (el) { el.addEventListener('input', calc); });
-    [tok, langSel].forEach(function (el) { el.addEventListener('change', calc); });
+    [unit, tok, langSel].forEach(function (el) { el.addEventListener('change', calc); });
     calc();
   }
 })();
