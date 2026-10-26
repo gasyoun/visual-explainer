@@ -1,6 +1,6 @@
 # Bug hunt — visual-explainer — 25.10.2026
 
-_Created: 25-10-2026 · Run: interactive day-mode `/bughunt` (rotation slot 4/173, `NEXT`) · Base: `main` @ `7428395` (25-10-2026) · Elapsed: ~35 min · Model: DeepSeek Flash (`deepseek-flash`)._
+\0 `/bughunt` (rotation slot 4/173, `NEXT`) · Base: `main` @ `7428395` (25-10-2026) · Elapsed: ~35 min · Model: DeepSeek Flash (`deepseek-flash`)._
 
 Static read of all six tool scripts (~1,850 LOC: `build.py`, `check.py`, `render.py`,
 `measure_tokens.py`, `measure_script_control.py`, `measure_language_mix.py`, plus
@@ -14,13 +14,13 @@ generated pages. Read-only: the only write in this pass is this report and the
 |---|---|---|---|
 | H1 | HIGH | The headline range **2.08–4.94×** for «хинди и санскрит» drops Hindi's **1.57×** (GPT-4o) — it is the hero stat on the page, line 11 of the README, and line 9 of the Telegram post; the page's own finding three beats later and the README's own table print 1.57 | **FIXED** 26-10-2026 (PR #2) |
 | H2 | HIGH | The script-control verdicts «GPT-4 режет почти вдвое (0.49–0.54×)» and «на DeepSeek разницы почти нет (0.84–0.98×)» are ranges over an **unstated subset**: the Russian column printed in the same table is 0.93× (GPT-4) and **1.42×** (DeepSeek) | **FIXED** 26-10-2026 (PR #2) |
-| M1 | MEDIUM | Two of three published pages (`bpe-in-60-seconds`, `context-window`) are **stale**: a fresh `build.py` run does not reproduce them, and the live site serves the stale `bpe` page (`grep -c demo-play` → 0) | reported |
-| M2 | MEDIUM | `check.py` never sees **single-quoted** `href`/`src`, so a broken local link ships green; `#anchor` targets and the inlined `<script type="application/json">` payloads are never validated either | reported (probe reproduced) |
-| M3 | MEDIUM | `check.py` **false-FAILs** valid links that carry a query string (`data.csv?v=2`) or a `tel:` scheme | reported (probe reproduced) |
-| M4 | MEDIUM | `render_bars` hardcodes five groups and `max_ratio = 5.2` while iterating the data: a 6th tokenizer is drawn **below the viewBox** (y=520 vs height 486), a ratio above 5.2 paints a 1,154 px bar past the 1,000 px viewBox | reported (probe reproduced) |
-| M5 | MEDIUM | **No gate is wired**: no `.github/workflows`, no pre-commit, no tests — `check.py`/`render.py` are advisory only; `check.py` even fails on the repo's own gallery `index.html` | reported |
-| M6 | MEDIUM | The 10-second strip loop desyncs after a manual language pick: selecting **SA** and pressing ▶ advances to **HI** (order is EN→RU→HI→SA), because `idx` is captured once at load | reported (probe reproduced) |
-| L1 | LOW | Zero or empty volume renders «Дороже английского **×0.00**» instead of «—» | reported |
+| M1 | MEDIUM | Two of three published pages (`bpe-in-60-seconds`, `context-window`) are **stale**: a fresh `build.py` run does not reproduce them, and the live site serves the stale `bpe` page (`grep -c demo-play` → 0) | **FIXED** 26-10-2026 (PR #3) — all three pages rebuilt, screenshots re-rendered |
+| M2 | MEDIUM | `check.py` never sees **single-quoted** `href`/`src`, so a broken local link ships green; `#anchor` targets and the inlined `<script type="application/json">` payloads are never validated either | **FIXED** 26-10-2026 (PR #4) — parser-based gate; single-quoted links, anchors and JSON payloads are checked |
+| M3 | MEDIUM | `check.py` **false-FAILs** valid links that carry a query string (`data.csv?v=2`) or a `tel:` scheme | **FIXED** 26-10-2026 (PR #4) — `urlsplit()` + explicit scheme list |
+| M4 | MEDIUM | `render_bars` hardcodes five groups and `max_ratio = 5.2` while iterating the data: a 6th tokenizer is drawn **below the viewBox** (y=520 vs height 486), a ratio above 5.2 paints a 1,154 px bar past the 1,000 px viewBox | **FIXED** 26-10-2026 (PR #3) — axis and canvas derived from the data; probes in `verify.py` |
+| M5 | MEDIUM | **No gate is wired**: no `.github/workflows`, no pre-commit, no tests — `check.py`/`render.py` are advisory only; `check.py` even fails on the repo's own gallery `index.html` | **FIXED** 26-10-2026 (PR #4) — `tools/verify.py` + `.github/workflows/verify.yml` (green on PR #4 and on `main`) |
+| M6 | MEDIUM | The 10-second strip loop desyncs after a manual language pick: selecting **SA** and pressing ▶ advances to **HI** (order is EN→RU→HI→SA), because `idx` is captured once at load | **FIXED** 26-10-2026 (PR #3) — `idx` resyncs on a manual pick |
+| L1 | LOW | Zero or empty volume renders «Дороже английского **×0.00**» instead of «—» | **FIXED** 26-10-2026 (PR #3) — `—` on an empty volume |
 | L2 | LOW | Both FLORES loaders strip blank lines **per file, then align by index** — a blank line in any one language file silently misaligns every later sentence; the loader is duplicated in two scripts | reported |
 | L3 | LOW | `measure_language_mix.py` collapses Hindi and Sanskrit into one `deva` ratio (Sanskrit's 2.08/4.938), overstating Hindi-heavy mixes (Hindi is 1.573/4.759); its OpenCode lane is documented as random but is «latest 100» | reported |
 | L4 | LOW | `render_bytes` silently drops a word block when the strips key is missing, contradicting the builder's own «every data beat must resolve» contract | reported |
@@ -29,6 +29,27 @@ generated pages. Read-only: the only write in this pass is this report and the
 
 Severity: HIGH = a wrong number published on the flagship artefact; MEDIUM = broken
 gate, wrong edge case, or artefact drift; LOW = latent.
+
+## Fix pass 26.10.2026
+
+MG: «fix h1 h2» then «go» — two HIGH in PR #2, the MEDIUMs and L1 in PR #3 and PR #4.
+
+| PR | What it closes | Proof |
+|---|---|---|
+| #2 | H1, H2 | corrected ranges in `spec.json`/`README`/`POST`/`PLAN` + a dated amendment in `DECISIONS`; page rebuilt byte-identically, four screenshots re-rendered |
+| #3 | M1, M4, M6, L1 | all three pages rebuilt from their specs (build parity is now green); chart axis/canvas derived from the data; loop index resyncs on a manual pick; `—` on an empty volume |
+| #4 | M2, M3, M5 | `check.py` on `html.parser` + `--self-test` (10 fixtures), `tools/verify.py`, `.github/workflows/verify.yml` |
+
+The gate is no longer advisory: `python tools/verify.py` runs the gate self-test, rebuilds
+every spec and fails on a changed page, checks each page, and probes the chart at 3 / 5 / 6
+tokenizers and a 7.9× ratio. CI runs exactly that command — green on PR #4 (5 s) and on the
+`main` push (9 s), so the Actions spending limit is not blocking this repo today.
+
+Still open, LOW only: **L2** (per-file blank-line filtering before index alignment in the
+two FLORES loaders), **L3** (one `deva` ratio for Hindi and Sanskrit; the OpenCode lane is
+«latest 100», not random), **L4** (`render_bytes` drops a missing word block silently),
+**L5** (`json.dumps` inlined without escaping `<`), **L6** (builder is Russian-only, four
+strip languages / five chart languages hardcoded; `lang` only reaches `<html lang>`).
 
 ## What verified green in this pass
 
