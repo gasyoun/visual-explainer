@@ -44,8 +44,6 @@ import json
 import platform
 import statistics
 import sys
-import tarfile
-import urllib.request
 from datetime import date
 from pathlib import Path
 
@@ -55,12 +53,11 @@ import transformers
 from huggingface_hub import HfApi
 from transformers import AutoTokenizer
 
-ROOT = Path(__file__).resolve().parents[1]
-CACHE = ROOT / ".cache"
-OUT = ROOT / "examples" / "token-tax" / "data"
-FLORES_URL = "https://dl.fbaipublicfiles.com/nllb/flores200_dataset.tar.gz"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from flores import LANGS, load_texts  # noqa: E402  (line-aligned loader, shared)
 
-LANGS = {"EN": "eng_Latn", "RU": "rus_Cyrl", "HI": "hin_Deva", "SA": "san_Deva"}
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "examples" / "token-tax" / "data"
 HF_REPOS = {
     "Qwen2.5": "Qwen/Qwen2.5-7B",
     "DeepSeek-V3": "deepseek-ai/DeepSeek-V3",
@@ -86,39 +83,6 @@ CASE_TEXTS = {
         "HI": "तुम्हारा अधिकार केवल कर्म करने में है, उसके फल में नहीं। फल को अपना उद्देश्य मत बनाओ, और अकर्म में भी आसक्ति मत रखो।",
     },
 }
-
-
-def ensure_flores() -> Path:
-    """Download and extract FLORES-200 once; return the devtest directory."""
-    CACHE.mkdir(parents=True, exist_ok=True)
-    archive = CACHE / "flores200_dataset.tar.gz"
-    if not archive.exists():
-        print(f"downloading {FLORES_URL} ...", file=sys.stderr)
-        urllib.request.urlretrieve(FLORES_URL, archive)
-    root = CACHE / "flores200_dataset"
-    if not (root / "devtest" / "eng_Latn.devtest").exists():
-        print("extracting FLORES-200 ...", file=sys.stderr)
-        with tarfile.open(archive) as tar:
-            tar.extractall(CACHE, filter="data")
-    return root / "devtest"
-
-
-def load_texts(limit: int) -> dict[str, list[str]]:
-    base = ensure_flores()
-    texts: dict[str, list[str]] = {}
-    for lang, code in LANGS.items():
-        lines = [
-            line.strip()
-            for line in (base / f"{code}.devtest").read_text(encoding="utf-8").splitlines()
-            if line.strip()
-        ]
-        texts[lang] = lines
-    n = min(len(v) for v in texts.values())
-    if limit:
-        n = min(n, limit)
-    if n == 0:
-        raise SystemExit("FLORES devtest is empty")
-    return {lang: lines[:n] for lang, lines in texts.items()}
 
 
 def load_tokenizers() -> tuple[dict[str, object], dict[str, dict]]:

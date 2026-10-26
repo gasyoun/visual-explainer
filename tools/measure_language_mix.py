@@ -24,6 +24,9 @@ Method
 * ``tax_factor`` = ru_share * (1 - 1/ru_ratio) + deva_share * (1 - 1/deva_ratio)
   for GPT-4o and GPT-4 ratios from the token-tax audit. It is the share of
   input cost that would disappear if the same meaning were English.
+* Devanagari is one script over two languages and the sampler cannot tell them
+  apart, so ``deva`` is a *band* (Hindi … Sanskrit) and the point estimate is
+  its midpoint; ``tax_factor_band`` carries both ends.
 * Prompts are only part of the input: tool output, file contents and system
   prompts dilute the non-English share. Treat the prompt tax as an upper bound;
   ``claude_tool`` is a context proxy, not the fleet input mix.
@@ -49,9 +52,12 @@ CYR = re.compile(r"[\u0400-\u04FF]")
 DEVA = re.compile(r"[\u0900-\u097F]")
 LAT = re.compile(r"[A-Za-z]")
 
+# Devanagari spans two languages with different ratios (FLORES audit):
+# Hindi 1.573× / 4.759×, Sanskrit 2.085× / 4.938×. The point estimate uses the
+# midpoint of that band, the report carries both ends.
 RATIOS = {
-    "gpt-4o": {"ru": 1.421, "deva": 2.08},
-    "gpt-4": {"ru": 2.46, "deva": 4.938},
+    "gpt-4o": {"ru": 1.421, "deva": (1.573, 2.085)},
+    "gpt-4": {"ru": 2.462, "deva": (4.759, 4.938)},
 }
 
 MAX_CHARS = 12000
@@ -259,7 +265,7 @@ def sample_opencode(n_sessions: int, per_session: int, rng: random.Random):
         return Counter(), 0
     conn = _sqlite_ro(db)
     try:
-        sessions = [row[0] for row in conn.execute("SELECT id FROM session ORDER BY time_created DESC LIMIT ?", (n_sessions,))]
+        sessions = [row[0] for row in conn.execute("SELECT id FROM session ORDER BY RANDOM() LIMIT ?", (n_sessions,))]
         agg = Counter()
         for sid in sessions:
             rows = conn.execute(
@@ -293,9 +299,20 @@ def shares(agg: Counter) -> dict:
     }
 
 
-def tax_factor(share: dict, model: str) -> float:
-    ratios = RATIOS[model]
-    return (share["ru_pct"] / 100) * (1 - 1 / ratios["ru"]) + (share["deva_pct"] / 100) * (1 - 1 / ratios["deva"])
+def deva_ratio(model: str, which: str = "mid") -> float:
+    lo, hi = RATIOS[model]["deva"]
+    return {"lo": lo, "hi": hi, "mid": (lo + hi) / 2}[which]
+
+
+def tax_factor(share: dict, model: str, deva: str = "mid") -> float:
+    ru = (share["ru_pct"] / 100) * (1 - 1 / RATIOS[model]["ru"])
+    dev = (share["deva_pct"] / 100) * (1 - 1 / deva_ratio(model, deva))
+    return ru + dev
+
+
+def tax_band(share: dict, model: str) -> tuple[float, float]:
+    """(low, high) tax in percent: Hindi-weighted end … Sanskrit-weighted end."""
+    return (100 * tax_factor(share, model, "lo"), 100 * tax_factor(share, model, "hi"))
 
 
 def main() -> None:
@@ -355,6 +372,9 @@ def main() -> None:
         "weighted_prompt": weighted_share,
         "tax_factor": {model: round(100 * tax_factor(shares(overall), model), 2) for model in RATIOS},
         "weighted_tax_factor": weighted_tax,
+        "deva_ratio_band": {model: list(RATIOS[model]["deva"]) for model in RATIOS},
+        "tax_factor_band": {model: [round(v, 2) for v in tax_band(shares(overall), model)]
+                            for model in RATIOS},
         "weighted_tax_usd": weighted_usd,
         "tax_factor_by_lane": {
             name: {model: round(100 * tax_factor(shares(agg), model), 2) for model in RATIOS}
@@ -388,7 +408,9 @@ def main() -> None:
           f"{w['ru_pct']:>6.2f} {w['deva_pct']:>6.2f} {w['latin_pct']:>6.2f} {w['other_pct']:>7.2f}")
     print("\ntax factor (share of input cost that disappears in English):")
     for model, pct in report["tax_factor"].items():
-        print(f"  {model}: {pct:.2f}% (prompt-char) · {report['weighted_tax_factor'][model]:.2f}% (lane-weighted)")
+        lo, hi = report["tax_factor_band"][model]
+        print(f"  {model}: {pct:.2f}% (prompt-char, band {lo:.2f}–{hi:.2f}%) · "
+              f"{report['weighted_tax_factor'][model]:.2f}% (lane-weighted)")
     print("\n99,787,974 generated tokens at $2.50/M:")
     for model, row in report["volume"].items():
         if isinstance(row, dict):

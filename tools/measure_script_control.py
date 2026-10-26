@@ -38,7 +38,8 @@ from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from measure_tokens import LANGS, count_tokens, ensure_flores, load_tokenizers  # noqa: E402
+from flores import LANGS, load_texts  # noqa: E402
+from measure_tokens import count_tokens, load_tokenizers  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "examples" / "token-tax" / "data"
@@ -58,17 +59,8 @@ def to_latin(lang: str, text: str, scheme: str | None) -> str:
 
 
 def main() -> None:
-    base = ensure_flores()
-    texts: dict[str, list[str]] = {}
-    for lang, code in LANGS.items():
-        lines = [
-            line.strip()
-            for line in (base / f"{code}.devtest").read_text(encoding="utf-8").splitlines()
-            if line.strip()
-        ]
-        texts[lang] = lines
-    n = min(len(v) for v in texts.values())
-    texts = {lang: lines[:n] for lang, lines in texts.items()}
+    texts = load_texts()
+    n = len(texts["EN"])
 
     encoders, tokenizer_meta = load_tokenizers()
     results: dict[str, dict] = {}

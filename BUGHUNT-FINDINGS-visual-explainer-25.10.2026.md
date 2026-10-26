@@ -21,11 +21,11 @@ generated pages. Read-only: the only write in this pass is this report and the
 | M5 | MEDIUM | **No gate is wired**: no `.github/workflows`, no pre-commit, no tests — `check.py`/`render.py` are advisory only; `check.py` even fails on the repo's own gallery `index.html` | **FIXED** 26-10-2026 (PR #4) — `tools/verify.py` + `.github/workflows/verify.yml` (green on PR #4 and on `main`) |
 | M6 | MEDIUM | The 10-second strip loop desyncs after a manual language pick: selecting **SA** and pressing ▶ advances to **HI** (order is EN→RU→HI→SA), because `idx` is captured once at load | **FIXED** 26-10-2026 (PR #3) — `idx` resyncs on a manual pick |
 | L1 | LOW | Zero or empty volume renders «Дороже английского **×0.00**» instead of «—» | **FIXED** 26-10-2026 (PR #3) — `—` on an empty volume |
-| L2 | LOW | Both FLORES loaders strip blank lines **per file, then align by index** — a blank line in any one language file silently misaligns every later sentence; the loader is duplicated in two scripts | reported |
-| L3 | LOW | `measure_language_mix.py` collapses Hindi and Sanskrit into one `deva` ratio (Sanskrit's 2.08/4.938), overstating Hindi-heavy mixes (Hindi is 1.573/4.759); its OpenCode lane is documented as random but is «latest 100» | reported |
-| L4 | LOW | `render_bytes` silently drops a word block when the strips key is missing, contradicting the builder's own «every data beat must resolve» contract | reported |
-| L5 | LOW | `json.dumps` is inlined into `<script type="application/json">` without escaping `<`; any `</script>` inside a token or case-study text breaks the page | reported |
-| L6 | LOW | The builder is Russian-only and hardcodes four strip languages / five chart languages; the spec's `lang` only sets `<html lang>` | reported |
+| L2 | LOW | Both FLORES loaders strip blank lines **per file, then align by index** — a blank line in any one language file silently misaligns every later sentence; the loader is duplicated in two scripts | **FIXED** 26-10-2026 (PR #6) — shared `tools/flores.py`, refuses a misaligned corpus; probed in `verify.py` |
+| L3 | LOW | `measure_language_mix.py` collapses Hindi and Sanskrit into one `deva` ratio (Sanskrit's 2.08/4.938), overstating Hindi-heavy mixes (Hindi is 1.573/4.759); its OpenCode lane is documented as random but is «latest 100» | **FIXED** 26-10-2026 (PR #6) — `deva` is a band, midpoint point-estimate; OpenCode lane is random as documented |
+| L4 | LOW | `render_bytes` silently drops a word block when the strips key is missing, contradicting the builder's own «every data beat must resolve» contract | **FIXED** 26-10-2026 (PR #6) — `render_bytes` raises on a missing key/encoding |
+| L5 | LOW | `json.dumps` is inlined into `<script type="application/json">` without escaping `<`; any `</script>` inside a token or case-study text breaks the page | **FIXED** 26-10-2026 (PR #6) — `json_for_script()` escapes `<`, U+2028/9 |
+| L6 | LOW | The builder is Russian-only and hardcodes four strip languages / five chart languages; the spec's `lang` only sets `<html lang>` | **FIXED** 26-10-2026 (PR #6) — languages derived from the data + palette; `verify.py` refuses a non-`ru` spec; limitation documented |
 
 Severity: HIGH = a wrong number published on the flagship artefact; MEDIUM = broken
 gate, wrong edge case, or artefact drift; LOW = latent.
@@ -39,17 +39,16 @@ MG: «fix h1 h2» then «go» — two HIGH in PR #2, the MEDIUMs and L1 in PR #3
 | #2 | H1, H2 | corrected ranges in `spec.json`/`README`/`POST`/`PLAN` + a dated amendment in `DECISIONS`; page rebuilt byte-identically, four screenshots re-rendered |
 | #3 | M1, M4, M6, L1 | all three pages rebuilt from their specs (build parity is now green); chart axis/canvas derived from the data; loop index resyncs on a manual pick; `—` on an empty volume |
 | #4 | M2, M3, M5 | `check.py` on `html.parser` + `--self-test` (10 fixtures), `tools/verify.py`, `.github/workflows/verify.yml` |
+| #6 | L2–L6 | shared `flores.py` loader (+ `verify.py` probes), `deva` band, fail-closed `render_bytes`, escaped JSON payloads, data-derived languages |
 
 The gate is no longer advisory: `python tools/verify.py` runs the gate self-test, rebuilds
 every spec and fails on a changed page, checks each page, and probes the chart at 3 / 5 / 6
 tokenizers and a 7.9× ratio. CI runs exactly that command — green on PR #4 (5 s) and on the
 `main` push (9 s), so the Actions spending limit is not blocking this repo today.
 
-Still open, LOW only: **L2** (per-file blank-line filtering before index alignment in the
-two FLORES loaders), **L3** (one `deva` ratio for Hindi and Sanskrit; the OpenCode lane is
-«latest 100», not random), **L4** (`render_bytes` drops a missing word block silently),
-**L5** (`json.dumps` inlined without escaping `<`), **L6** (builder is Russian-only, four
-strip languages / five chart languages hardcoded; `lang` only reaches `<html lang>`).
+L2–L6 landed in PR #6 the same day: the loader is one line-aligned module that refuses a
+misaligned corpus, `deva` is a band, `render_bytes` fails closed, inlined JSON escapes `<`,
+and the builder's languages derive from the data. **No finding in this report is open.**
 
 ## What verified green in this pass
 

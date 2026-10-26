@@ -46,6 +46,7 @@ in directly.
 | [`tools/check.py`](tools/check.py) | fail-closed checks (trust block, links, anchors, JSON payloads, mobile, external JS); `--self-test` proves it refuses |
 | [`tools/verify.py`](tools/verify.py) | one command over every example: gate self-test → build parity → checks → chart probes (CI runs it) |
 | [`tools/render.py`](tools/render.py) | desktop + mobile PNGs for the render review |
+| [`tools/flores.py`](tools/flores.py) | the line-aligned FLORES-200 loader (refuses a misaligned corpus) |
 | [`tools/measure_tokens.py`](tools/measure_tokens.py) | reproducible FLORES-200 audit |
 | [`tools/measure_script_control.py`](tools/measure_script_control.py) | script control: the same sentences in Latin |
 | [`tools/measure_language_mix.py`](tools/measure_language_mix.py) | sample prompt script shares (counts only) |
@@ -99,6 +100,11 @@ python tools/verify.py --render   # + load each page in Chrome, fail on a JS err
 
 `.github/workflows/verify.yml` runs it on every push and pull request. The gallery
 `index.html` is hand-written, not generated, and is outside the gate.
+
+Two limits worth knowing: the builder's UI copy is **Russian only** (a spec may
+declare `"lang": "ru"` and nothing else until those strings move into the spec),
+and the script-control table is a scheme-level view whose column headers are
+written for RU/HI/SA rather than derived.
 
 ## License
 
