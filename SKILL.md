@@ -52,6 +52,9 @@ tools/render.py ──►  desktop.png + mobile.png
         │
         ▼
    look at the PNG, fix, publish
+
+tools/verify.py ──►  the same gate across EVERY example, in CI:
+                     gate self-test → build parity → check.py → chart probes
 ```
 
 **One source, many outputs.** The page, its data table, its CSV, and its
@@ -138,11 +141,20 @@ The spec is JSON:
 
 ```bash
 python tools/check.py examples/token-tax/index.html
+python tools/check.py --self-test          # the gate must refuse, not only pass
+python tools/verify.py                     # every example: build parity + gate + probes
 ```
 
 The check refuses: no title, no single h1, no viewport, no `lang`, no trust
 block, no data table, external `<script src>`, `TODO`/`lorem`, broken local
-links.
+links (single- or double-quoted, query strings included), a dangling `#anchor`,
+and an inlined `application/json` payload that does not parse.
+
+`verify.py` is the tree-level contract: it rebuilds every `examples/*/spec.json`
+and fails if a committed page changes (so a stale or hand-edited page cannot
+ship), runs the gate on each page, and probes `render_bars` at 3 / 5 / 6
+tokenizers and above-axis ratios. `.github/workflows/verify.yml` runs it on every
+push and PR.
 
 ### 5. Render, then look
 
