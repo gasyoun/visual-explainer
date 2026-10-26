@@ -8,7 +8,7 @@ and `token-tax`, the page it generated as its first case.
 
 ## token-tax
 
-The same meaning costs **1.4–2.5×** more tokens in Russian and **2.1–4.9×** more
+The same meaning costs **1.4–2.5×** more tokens in Russian and **1.6–4.9×** more
 in Hindi and Sanskrit, depending on the tokenizer. Measured on 1,012 aligned
 FLORES-200 sentences across five openly available tokenizers:
 
@@ -28,8 +28,9 @@ multilingual positioning.
 A **script control** — the same sentences in Latin script (ASCII for Russian,
 HK/IAST for Hindi and Sanskrit) — shows the effect is tokenizer-dependent:
 **0.49–1.62×** Latin/native. On GPT-4o transliteration does not help
-(1.06–1.62×); on GPT-4 it halves the count (0.49–0.54×); on DeepSeek it is
-nearly neutral (0.84–0.98×). Devanagari is a script, not a language: the script
+(1.06–1.62×); on GPT-4 it halves Devanagari (0.49–0.54×) but leaves Russian
+alone (0.93×); on DeepSeek it is neutral for Devanagari (0.84–0.98×) and dearer
+for Russian (1.42×). Devanagari is a script, not a language: the script
 sets a floor, the tokenizer's vocabulary decides the bill.
 
 The calculator accepts **characters or tokens**; in token mode the English
