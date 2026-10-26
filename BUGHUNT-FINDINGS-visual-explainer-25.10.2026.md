@@ -12,8 +12,8 @@ generated pages. Read-only: the only write in this pass is this report and the
 
 | # | Sev | Finding | Status |
 |---|---|---|---|
-| H1 | HIGH | The headline range **2.08–4.94×** for «хинди и санскрит» drops Hindi's **1.57×** (GPT-4o) — it is the hero stat on the page, line 11 of the README, and line 9 of the Telegram post; the page's own finding three beats later and the README's own table print 1.57 | **FIXED** 26-10-2026 (fix pass) |
-| H2 | HIGH | The script-control verdicts «GPT-4 режет почти вдвое (0.49–0.54×)» and «на DeepSeek разницы почти нет (0.84–0.98×)» are ranges over an **unstated subset**: the Russian column printed in the same table is 0.93× (GPT-4) and **1.42×** (DeepSeek) | **FIXED** 26-10-2026 (fix pass) |
+| H1 | HIGH | The headline range **2.08–4.94×** for «хинди и санскрит» drops Hindi's **1.57×** (GPT-4o) — it is the hero stat on the page, line 11 of the README, and line 9 of the Telegram post; the page's own finding three beats later and the README's own table print 1.57 | **FIXED** 26-10-2026 (PR #2) |
+| H2 | HIGH | The script-control verdicts «GPT-4 режет почти вдвое (0.49–0.54×)» and «на DeepSeek разницы почти нет (0.84–0.98×)» are ranges over an **unstated subset**: the Russian column printed in the same table is 0.93× (GPT-4) and **1.42×** (DeepSeek) | **FIXED** 26-10-2026 (PR #2) |
 | M1 | MEDIUM | Two of three published pages (`bpe-in-60-seconds`, `context-window`) are **stale**: a fresh `build.py` run does not reproduce them, and the live site serves the stale `bpe` page (`grep -c demo-play` → 0) | reported |
 | M2 | MEDIUM | `check.py` never sees **single-quoted** `href`/`src`, so a broken local link ships green; `#anchor` targets and the inlined `<script type="application/json">` payloads are never validated either | reported (probe reproduced) |
 | M3 | MEDIUM | `check.py` **false-FAILs** valid links that carry a query string (`data.csv?v=2`) or a `tel:` scheme | reported (probe reproduced) |
@@ -99,7 +99,7 @@ Fix shape: `2.08–4.94×` → **`1.57–4.94×`** (or re-label the stat «са�
 add a Hindi line). Four files, one number, plus a rebuild of `examples/token-tax/index.html`.
 Owner: MG — the headline claim is authorial voice, not a mechanical edit.
 
-**Fixed 26-10-2026** (MG: «fix h1 h2»): the range is now **1.57–4.94×** in the hero stat,
+**Fixed 26-10-2026** (MG: «fix h1 h2», PR #2): the range is now **1.57–4.94×** in the hero stat,
 the standfirst, the closing beat and the page `<meta description>`; `README.md` reads
 **1.6–4.9×**; `POST.md` and `PLAN.md` carry the corrected pair range; `DECISIONS_2026-10-24.md`
 keeps the original wording and gains a dated amendment. `index.html` was rebuilt from the spec
@@ -147,7 +147,7 @@ on GPT-4 it is neutral for Russian (0.93×), not «halved». The page body is ho
 Fix shape: state the range over the five schemes (0.49–0.93× / 0.84–1.42×) or scope the
 sentence to «HK/IAST на деванагари». Owner: MG.
 
-**Fixed 26-10-2026** (MG: «fix h1 h2»), by scoping rather than widening, because the
+**Fixed 26-10-2026** (MG: «fix h1 h2», PR #2), by scoping rather than widening, because the
 Devanagari/HK effect is the real finding: `README.md` now reads «on GPT-4 it halves
 Devanagari (0.49–0.54×) but leaves Russian alone (0.93×); on DeepSeek it is neutral for
 Devanagari (0.84–0.98×) and dearer for Russian (1.42×)»; `docs/METHOD.md` points 2–4 say
