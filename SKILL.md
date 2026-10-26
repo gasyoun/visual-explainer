@@ -208,6 +208,11 @@ at the canvas edge, wrong pluralisation, money rounded to `1$`, uppercase
    chat links, or participant names in a public artifact.
 10. **Look at the render before delivery.** This is the rule the other nine
     depend on.
+11. **The builder's UI copy is Russian.** `lang` in the spec only sets
+    `<html lang>`; the strip labels, chart legend and calculator fields are
+    Russian strings inside `build.py`. So `verify.py` refuses a spec that
+    declares anything but `"lang": "ru"` — a page must not claim a language it
+    does not speak. Moving those strings into the spec is the way to lift this.
 
 ## Design language
 

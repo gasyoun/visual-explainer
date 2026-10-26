@@ -15,6 +15,20 @@ All notable changes to this repository. Dates are ISO (`YYYY-MM-DD`).
 
 ### Changed
 
+- `tools/flores.py` — one line-aligned loader for the measurement scripts (was duplicated
+  in two files, and both filtered blank lines **per file** before aligning by index: one
+  blank line anywhere would have shifted every later sentence). It now trims only trailing
+  blanks and refuses an internal blank line or unequal file lengths; `verify.py` probes all
+  four cases.
+- `build.py` — the chart legend, bars, table columns, strip buttons and calculator options
+  derive their languages from the committed JSON (were hardcoded RU/HI/SA), and colours come
+  from an index palette (a new language no longer raises `KeyError`). Output for the current
+  data is byte-identical.
+- `measure_language_mix.py` — `deva` is a ratio **band** (Hindi 1.573×/4.759× …
+  Sanskrit 2.085×/4.938×) instead of Sanskrit's value applied to both languages; the point
+  estimate uses the midpoint and the report carries `tax_factor_band`. The OpenCode lane is
+  sampled `ORDER BY RANDOM()` as documented (was "latest 100").
+
 - `tools/check.py` rewritten on `html.parser` (was regex): single-quoted `href`/`src`
   are now seen, same-page `#anchor` targets and inlined `application/json` payloads
   are validated, and query strings / `tel:` / `mailto:` / `javascript:` no longer
@@ -22,6 +36,12 @@ All notable changes to this repository. Dates are ISO (`YYYY-MM-DD`).
   defects it must refuse.
 
 ### Fixed
+
+- **L2–L6 of the 25.10.2026 hunt** — the loader alignment fix above; `render_bytes` now
+  fails closed when a requested strips key or encoding is missing (it used to render an
+  empty beat); inlined JSON payloads escape `<` so a `</script>` inside any text cannot
+  close the block; the builder's Russian-only copy is stated in `SKILL.md` and enforced by
+  `verify.py` (a spec may only declare `"lang": "ru"`).
 
 - **M1 of the 25.10.2026 hunt** — `bpe-in-60-seconds` and `context-window` were stale
   builds (no `#demo-play` button, old CSS); all three examples are rebuilt from their

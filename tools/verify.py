@@ -19,6 +19,10 @@ Steps
 4. **probes** — `render_bars` must keep every mark inside its `viewBox` for 3, 5
    and 6 tokenizers and for a ratio above the current axis; the layout used to be
    hardcoded to five groups and a 5.2× axis.
+5. **loader probes** — the FLORES loader must refuse a corpus whose files are not
+   line-aligned (that used to be a silent per-sentence ratio bug).
+6. **spec gate** — every spec must declare `lang: ru`: the builder's UI copy is
+   Russian, so a page claiming another language would be mislabelled.
 
 `--render` additionally loads each page in Chromium and fails on a JS error, so a
 widget that throws on load cannot pass as "renders fine".
@@ -31,6 +35,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +44,7 @@ sys.path.insert(0, str(TOOLS))
 
 import build  # noqa: E402  (local tool)
 import check as gate  # noqa: E402  (local tool)
+import flores  # noqa: E402  (local tool, stdlib only)
 
 PAGES = sorted((ROOT / "examples").glob("*/spec.json"))
 
@@ -131,6 +137,52 @@ def run_preflight() -> bool:
     return ok
 
 
+def run_loader_probes() -> bool:
+    """L2: an unaligned corpus must fail closed, not shift sentences silently."""
+
+    def write(base: Path, per_lang: dict[str, list[str]]) -> None:
+        for code, lines in per_lang.items():
+            (base / f"{code}.devtest").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def aligned(n: int) -> dict[str, list[str]]:
+        return {code: [f"{code} {i}" for i in range(n)] for code in flores.LANGS.values()}
+
+    def case(name: str, per_lang: dict[str, list[str]], should_raise: bool) -> bool:
+        with tempfile.TemporaryDirectory() as tmp:
+            write(Path(tmp), per_lang)
+            try:
+                got = flores.read_devtest(Path(tmp))
+                raised = False
+            except flores.FloresError:
+                raised = True
+                got = {}
+        detail = "refused" if raised else f"{len(next(iter(got.values())))} lines each"
+        return step(f"loader {name}", raised == should_raise, detail)
+
+    ok = case("aligned corpus", aligned(3), False)
+    trailing = aligned(3)
+    trailing[flores.LANGS["RU"]] += ["", ""]          # a trailing newline is not a sentence
+    ok &= case("trailing blank lines", trailing, False)
+    gaps = aligned(3)
+    gaps[flores.LANGS["RU"]][1] = ""                   # internal blank: must refuse
+    ok &= case("internal blank line", gaps, True)
+    short = aligned(3)
+    short[flores.LANGS["SA"]] = short[flores.LANGS["SA"]][:2]
+    ok &= case("unequal length", short, True)
+    return ok
+
+
+def run_spec_lang() -> bool:
+    """L6: the builder's copy is Russian; a spec may not claim another language yet."""
+    ok = True
+    for spec in PAGES:
+        declared = json.loads(spec.read_text(encoding="utf-8")).get("lang", "ru")
+        ok &= step(f"spec lang {spec.parent.name}", declared == "ru",
+                   "" if declared == "ru"
+                   else f"'{declared}' — the UI copy is Russian; add i18n before declaring it")
+    return ok
+
+
 def run_render() -> bool:
     try:
         from playwright.sync_api import sync_playwright
@@ -176,6 +228,8 @@ def main() -> int:
     ok &= run_gate()
     ok &= run_preflight()
     ok &= run_probes()
+    ok &= run_loader_probes()
+    ok &= run_spec_lang()
     if args.render:
         ok &= run_render()
     print()

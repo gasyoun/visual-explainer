@@ -105,6 +105,38 @@ def ratio_span(results: dict, lang: str) -> str:
     return f"{min(values):.2f}–{max(values):.2f}×"
 
 
+LANG_LABELS = {
+    "EN": "английский",
+    "RU": "русский",
+    "HI": "хинди",
+    "SA": "санскрит",
+    "DE": "немецкий",
+    "FR": "французский",
+    "ES": "испанский",
+    "ZH": "китайский",
+}
+# Categorical palette: index-ordered, so a new language gets a colour instead of a KeyError.
+PALETTE = ("#A32035", "#B07C1F", "#0D7F63", "#4A4E8C", "#8C4A6B", "#2F6F8F")
+
+
+def lang_label(code: str) -> str:
+    return LANG_LABELS.get(code, code)
+
+
+def chart_languages(results: dict) -> list[str]:
+    """Every language in the data except the EN baseline, in file order."""
+    first = next(iter(results.values()))
+    return [lang for lang in first if lang != "EN"]
+
+
+def json_for_script(value: object) -> str:
+    """JSON safe to inline in <script type="application/json">: `<` can close it."""
+    payload = json.dumps(value, ensure_ascii=False)
+    return (payload.replace("<", "\\u003c")
+                   .replace("\u2028", "\\u2028")
+                   .replace("\u2029", "\\u2029"))
+
+
 def chips(tokens: list[dict]) -> str:
     out = []
     for token in tokens:
@@ -160,7 +192,7 @@ def render_token_demo(beat: dict, strips: dict) -> str:
     lang_buttons = "".join(
         f'<button type="button" data-strip-lang="{esc(lang)}" '
         f'aria-pressed="{"true" if lang == default_lang else "false"}">{esc(lang)}</button>'
-        for lang in ("EN", "RU", "HI", "SA")
+        for lang in rows
     )
     enc_buttons = "".join(
         f'<button type="button" data-strip-enc="{esc(enc)}" '
@@ -186,7 +218,7 @@ def render_token_demo(beat: dict, strips: dict) -> str:
         + "</div>"
         + f'<p class="note">{raw(beat.get("note", ""))}</p>'
         + "</div></section>"
-        + f'<script type="application/json" id="strip-data">{json.dumps(strips, ensure_ascii=False)}</script>'
+        + f'<script type="application/json" id="strip-data">{json_for_script(strips)}</script>'
     )
 
 
@@ -197,11 +229,12 @@ def render_bars(beat: dict, data: dict) -> str:
     top, group_h, width = 30, 84, 1000
     # Geometry follows the data: the axis is wide enough for the largest bar and
     # the canvas is tall enough for every tokenizer (a 6th one used to be clipped).
-    ratios = [row[lang]["ratio_total"] for row in results.values() for lang in ("RU", "HI", "SA")]
+    languages = chart_languages(results)
+    ratios = [row[lang]["ratio_total"] for row in results.values() for lang in languages]
     max_ratio = math.ceil(max(ratios)) + 0.2
     height = top + len(names) * group_h + 36
     scale = chart_w / max_ratio
-    colors = {"RU": "#A32035", "HI": "#B07C1F", "SA": "#0D7F63"}
+    colors = {lang: PALETTE[i % len(PALETTE)] for i, lang in enumerate(languages)}
     bars = []
     # vertical gridlines + ticks
     for tick in range(1, int(max_ratio) + 1):
@@ -225,7 +258,7 @@ def render_bars(beat: dict, data: dict) -> str:
         bars.append(f'<text x="{label_x}" y="{y + 32}" font-family="Libre Franklin, sans-serif" '
                     f'font-size="10" letter-spacing="1" fill="#6B6F76">'
                     f'{fmt_int(row["EN"]["tokens_total"])} EN-токенов</text>')
-        for j, lang in enumerate(("RU", "HI", "SA")):
+        for j, lang in enumerate(languages):
             ratio = row[lang]["ratio_total"]
             bar_y = y + 6 + j * 18
             bar_w = ratio * scale
@@ -248,10 +281,8 @@ def render_bars(beat: dict, data: dict) -> str:
     table_rows = "".join(
         f'<tr><td>{esc(display_name(name))}</td>'
         f'<td class="num">{fmt_int(row["EN"]["tokens_total"])}</td>'
-        f'<td class="num">{row["RU"]["ratio_total"]:.2f}×</td>'
-        f'<td class="num">{row["HI"]["ratio_total"]:.2f}×</td>'
-        f'<td class="num">{row["SA"]["ratio_total"]:.2f}×</td>'
-        f'<td class="num">{row["SA"]["tokens_per_100_chars"]:.1f}</td></tr>'
+        + "".join(f'<td class="num">{row[lang]["ratio_total"]:.2f}×</td>' for lang in languages)
+        + f'<td class="num">{row[languages[-1]]["tokens_per_100_chars"]:.1f}</td></tr>'
         for name, row in results.items()
     )
     mobile_groups = []
@@ -278,17 +309,18 @@ def render_bars(beat: dict, data: dict) -> str:
     return (
         section_open(beat, "audit")
         + intro_html(beat)
-        + '<div class="chart-legend"><span><i style="background:#A32035"></i>русский</span>'
-          '<span><i style="background:#B07C1F"></i>хинди</span>'
-          '<span><i style="background:#0D7F63"></i>санскрит</span>'
-          '<span><i style="background:#C6BFB0"></i>английский = 1×</span></div>'
+        + '<div class="chart-legend">'
+        + "".join(f'<span><i style="background:{colors[lang]}"></i>{esc(lang_label(lang))}</span>'
+                  for lang in languages)
+        + '<span><i style="background:#C6BFB0"></i>английский = 1×</span></div>'
         + f'<div class="chart-wrap">{svg}</div>'
         + mobile_chart
         + f'<p class="note">{raw(beat.get("caption", ""))}</p>'
         + f'<div class="findings">{findings}</div>'
         + '<details class="data-table"><summary>Таблица с числами</summary><div class="table-wrap"><table>'
-          '<thead><tr><th>Токенизатор</th><th class="num">EN, токенов</th><th class="num">RU / EN</th>'
-          '<th class="num">HI / EN</th><th class="num">SA / EN</th><th class="num">SA на 100 симв.</th></tr></thead>'
+          '<thead><tr><th>Токенизатор</th><th class="num">EN, токенов</th>'
+          + "".join(f'<th class="num">{esc(lang)} / EN</th>' for lang in languages)
+          + f'<th class="num">{esc(languages[-1])} на 100 симв.</th></tr></thead>'
           f'<tbody>{table_rows}</tbody></table></div></details>'
         + "</div></section>"
     )
@@ -349,13 +381,22 @@ def render_bytes(beat: dict, strips: dict) -> str:
         for row in beat.get("table", [])
     )
     word = beat.get("word", {})
-    word_data = strips.get(word.get("key", ""), {}).get(word.get("lang", ""), {})
+    key, lang = word.get("key", ""), word.get("lang", "")
+    word_data = strips.get(key, {}).get(lang, {})
+    if word and word.get("rows") and not word_data:
+        raise SystemExit(
+            f"spec: strips has no '{key}' / '{lang}' for the bytes beat "
+            f"(keys: {sorted(strips)})"
+        )
     word_rows = []
     for spec in word.get("rows", []):
         enc = spec["enc"]
         row = word_data.get("encodings", {}).get(enc)
         if not row:
-            continue
+            raise SystemExit(
+                f"spec: strips '{key}' / '{lang}' has no encoding '{enc}' "
+                f"(have: {sorted(word_data.get('encodings', {}))})"
+            )
         fragments = sum(1 for token in row["tokens"] if token.get("t") is None)
         word_rows.append(
             f'<div class="word-row"><div class="tag">{esc(spec["label"])}'
@@ -388,9 +429,12 @@ def render_calculator(beat: dict, data: dict) -> str:
     options = "".join(
         f'<option value="{esc(name)}">{esc(display_name(name))}</option>' for name in names
     )
+    languages = chart_languages(results)
+    default_lang = beat.get("default_lang", "RU" if "RU" in languages else languages[0])
     lang_options = "".join(
-        f'<option value="{esc(lang)}"{" selected" if lang == "RU" else ""}>{esc(label)}</option>'
-        for lang, label in (("RU", "Русский"), ("HI", "Хинди"), ("SA", "Санскрит"))
+        f'<option value="{esc(lang)}"{" selected" if lang == default_lang else ""}>'
+        f'{esc(lang_label(lang).capitalize())}</option>'
+        for lang in languages
     )
     calc_data = {
         "tokenizers": {
@@ -400,7 +444,7 @@ def render_calculator(beat: dict, data: dict) -> str:
                     "tpw": row[lang]["tokens_per_word"],
                     "ratio": row[lang]["ratio_total"],
                 }
-                for lang in ("EN", "RU", "HI", "SA")
+                for lang in ["EN", *languages]
             }
             for name, row in results.items()
         },
@@ -443,7 +487,7 @@ def render_calculator(beat: dict, data: dict) -> str:
           "</div>"
           f'<p class="note">{raw(beat.get("note", ""))}</p>'
           "</div></div>"
-        + f'<script type="application/json" id="calc-data">{json.dumps(calc_data, ensure_ascii=False)}</script>'
+        + f'<script type="application/json" id="calc-data">{json_for_script(calc_data)}</script>'
         + "</div></section>"
     )
 
