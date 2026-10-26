@@ -4,8 +4,37 @@ All notable changes to this repository. Dates are ISO (`YYYY-MM-DD`).
 
 ## [Unreleased]
 
+### Added
+
+- `tools/verify.py` — one tree-level gate: `check.py --self-test` → rebuild every
+  `examples/*/spec.json` and fail if a committed page changes → `check.py` on each
+  page → `render_bars` probes at 3 / 5 / 6 tokenizers and above-axis ratios.
+  `--render` adds a Chromium pass that fails on any JS error or horizontal overflow.
+- `.github/workflows/verify.yml` — runs `python tools/verify.py` on every push to
+  `main` and on every pull request (stdlib only, Python 3.12).
+
+### Changed
+
+- `tools/check.py` rewritten on `html.parser` (was regex): single-quoted `href`/`src`
+  are now seen, same-page `#anchor` targets and inlined `application/json` payloads
+  are validated, and query strings / `tel:` / `mailto:` / `javascript:` no longer
+  false-fail. `--self-test` runs ten fixtures — clean pages it must pass and seeded
+  defects it must refuse.
+
 ### Fixed
 
+- **M1 of the 25.10.2026 hunt** — `bpe-in-60-seconds` and `context-window` were stale
+  builds (no `#demo-play` button, old CSS); all three examples are rebuilt from their
+  specs and their `desktop`/`mobile` screenshots re-rendered.
+- **M4 of the 25.10.2026 hunt** — `render_bars` derives the canvas height from the number
+  of tokenizers and the axis from the largest ratio (a 6th tokenizer used to be clipped at
+  y=520 in a 486-tall viewBox; a 7.9× ratio used to paint outside the canvas). The SVG
+  title/desc now derive the count and the per-language ranges from the committed JSON.
+- **M6 of the 25.10.2026 hunt** — a manual language pick resyncs the 10-second loop index
+  (`SA → ▶ → EN`; it used to jump to `HI`).
+- **L1 of the 25.10.2026 hunt** — an empty or zero volume renders `—` instead of `×0.00`.
+- The table-row formatter no longer mangles `font-family="Libre Franklin, sans-serif"`
+  into `Libre Franklin  sans-serif` (numbers are formatted with `fmt_int()`).
 - **H1 of the 25.10.2026 hunt** — the «хинди и санскрит» headline range was
   `2.08–4.94×` (Sanskrit's floor), dropping Hindi's `1.573×` on GPT-4o. Corrected to
   **`1.57–4.94×`** in `spec.json` (hero stat, standfirst, closing beat, `<meta

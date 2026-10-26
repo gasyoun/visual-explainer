@@ -1,0 +1,29 @@
+# The tree-level gate: build parity, page checks, gate self-test, chart probes.
+# Local equivalent: `python tools/verify.py` (add `--render` with playwright for
+# the JS-error pass). No dependencies — stdlib only.
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: verify (build parity + gate + probes)
+        run: python tools/verify.py

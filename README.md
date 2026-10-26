@@ -43,7 +43,8 @@ in directly.
 |---|---|
 | [`SKILL.md`](SKILL.md) | the skill: contract, workflow, hard rules |
 | [`tools/build.py`](tools/build.py) | `spec.json` → one HTML file |
-| [`tools/check.py`](tools/check.py) | fail-closed checks (trust block, links, mobile, external JS) |
+| [`tools/check.py`](tools/check.py) | fail-closed checks (trust block, links, anchors, JSON payloads, mobile, external JS); `--self-test` proves it refuses |
+| [`tools/verify.py`](tools/verify.py) | one command over every example: gate self-test → build parity → checks → chart probes (CI runs it) |
 | [`tools/render.py`](tools/render.py) | desktop + mobile PNGs for the render review |
 | [`tools/measure_tokens.py`](tools/measure_tokens.py) | reproducible FLORES-200 audit |
 | [`tools/measure_script_control.py`](tools/measure_script_control.py) | script control: the same sentences in Latin |
@@ -83,6 +84,21 @@ python tools/build.py examples/token-tax/spec.json
 python tools/check.py examples/token-tax/index.html
 python tools/render.py examples/token-tax/index.html
 ```
+
+## Verify
+
+One command proves the committed pages are their specs — it rebuilds every
+`examples/*/spec.json` and fails if a page changes, runs the gate (and the gate's
+own self-test) on each page, and probes the chart renderer at 3 / 5 / 6
+tokenizers and above-axis ratios:
+
+```bash
+python tools/verify.py            # CI runs exactly this (no dependencies)
+python tools/verify.py --render   # + load each page in Chrome, fail on a JS error
+```
+
+`.github/workflows/verify.yml` runs it on every push and pull request. The gallery
+`index.html` is hand-written, not generated, and is outside the gate.
 
 ## License
 
