@@ -1,0 +1,12 @@
+# visual-explainer — один spec, один HTML
+
+> Skill visual-explainer: three HTML pages built by one generator — flagship on LLM tokens, minis on BPE and the context window.
+
+## Pages
+
+- [Skill home](https://gasyoun.github.io/visual-explainer/) · [SKILL.md](https://gasyoun.github.io/visual-explainer/SKILL.md) · [Method](https://gasyoun.github.io/visual-explainer/docs/METHOD.md)
+- [Token tax (flagship)](https://gasyoun.github.io/visual-explainer/examples/token-tax/)
+- [BPE in 60 seconds](https://gasyoun.github.io/visual-explainer/examples/bpe-in-60-seconds/)
+- [Context window](https://gasyoun.github.io/visual-explainer/examples/context-window/)
+
+Source: https://github.com/gasyoun/visual-explainer
